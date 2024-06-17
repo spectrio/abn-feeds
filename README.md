@@ -41,10 +41,5 @@ After switching below command used to restart the PHP and Nginx server.
 `sudo service nginx restart`
 sudo service nginx restart
 
-# Getting Data from the Feed server
-You have to  use mysqldump
-- `mysqldump -u [user name] –p [password] [options] [database_name] [tablename] > [dumpfilename.sql]`
-  For example: mysqldump -u root –p aggregator > sql_0617.sql
-
 For Aggregator App information, you can find local setup in there.
 

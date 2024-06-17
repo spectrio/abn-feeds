@@ -88,3 +88,8 @@
 * `docker-compose up -d nginx mysql --build` to re-build and start docker services
 
 See [Laradock documentation](https://laradock.io/getting-started) for more reference.
+
+# Getting Data from the Feed server
+You have to  use mysqldump
+- `mysqldump -u [user name] –p [password] [options] [database_name] [tablename] > [dumpfilename.sql]`
+  For example: mysqldump -u root –p aggregator > <sql_name>.sql
