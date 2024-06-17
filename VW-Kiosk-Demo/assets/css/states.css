@@ -1,0 +1,242 @@
+#card-testing {
+    position: absolute;
+    top: 0px;
+    right: 40%;
+    z-index: 9999;
+}
+
+#state-info-popup {
+    margin-left: 10%;
+    margin-top: 2%;
+}
+
+.state-card {
+    display: flex;
+    flex-direction: column;
+    margin: 1rem auto;
+    margin-bottom: 1.6%;
+    background: #fff;
+    line-height: 1.4;
+    border-radius: 5px;
+    overflow: hidden;
+    z-index: 0;
+    cursor: pointer;
+}
+
+.state-card a {
+    color: inherit;
+}
+
+.state-card a:hover {
+    color: #5ad67d;
+}
+
+/*.state-card:hover .state-photo {
+    -webkit-transform: scale(1.3) rotate(3deg);
+    transform: scale(1.3) rotate(3deg);
+}*/
+
+.state-card .state-meta {
+    position: relative;
+    z-index: 0;
+    height: 200px;
+}
+
+.state-card .state-photo {
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    background-size: cover;
+    background-position: center;
+    /*    transition: -webkit-transform .2s;
+    transition: transform .2s;
+    transition: transform .2s, -webkit-transform .2s;*/
+}
+
+.state-card .state-details,
+.state-card .state-details ul {
+    margin: auto;
+    padding: 0;
+    list-style: none;
+}
+
+.state-card .state-details {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: -100%;
+    margin: auto;
+    transition: left .2s;
+    background: rgba(0, 0, 0, 0.4);
+    color: #fff;
+    padding: 10px;
+    width: 100%;
+    font-size: .9rem;
+}
+
+.state-card .state-details a {
+    -webkit-text-decoration: dotted underline;
+    text-decoration: dotted underline;
+}
+
+.state-card .state-details ul li {
+    display: inline-block;
+}
+
+.state-card .state-details .author:before {
+    font-family: FontAwesome;
+    margin-right: 10px;
+    content: "\f007";
+}
+
+.state-card .state-details .date:before {
+    font-family: FontAwesome;
+    margin-right: 10px;
+    content: "\f133";
+}
+
+.state-card .state-details .tags ul:before {
+    font-family: FontAwesome;
+    content: "\f02b";
+    margin-right: 10px;
+}
+
+.state-card .state-details .tags li {
+    margin-right: 2px;
+}
+
+.state-card .state-details .tags li:first-child {
+    margin-left: -4px;
+}
+
+.state-card .description {
+    padding: 1rem;
+    background: #fff;
+    position: relative;
+    z-index: 1;
+    color: #131D5F;
+}
+
+.state-card .description h1 {
+    line-height: 1;
+    margin: 0;
+    font-size: 1.7rem;
+}
+
+.state-card .description h2 {
+    font-size: 1rem;
+    font-weight: 300;
+    color: #6FA8E4;
+    margin-top: 5px;
+}
+
+.state-card .description .read-more {
+    text-align: right;
+}
+
+.state-card .description .read-more a {
+    color: #5ad67d;
+    display: inline-block;
+    position: relative;
+}
+
+.state-card .description .read-more a:after {
+    content: "\f061";
+    font-family: FontAwesome;
+    margin-left: -10px;
+    opacity: 0;
+    vertical-align: middle;
+    transition: margin .3s, opacity .3s;
+}
+
+.state-card .description .read-more a:hover:after {
+    margin-left: 5px;
+    opacity: 1;
+}
+
+.state-card p {
+    position: relative;
+    margin: 1rem 0 0;
+}
+
+.state-card p:first-of-type {
+    margin-top: 1.25rem;
+}
+
+.state-card p:first-of-type:before {
+    content: "";
+    position: absolute;
+    height: 5px;
+    background: #131D5F;
+    width: 35px;
+    top: -0.75rem;
+    border-radius: 3px;
+}
+
+.state-card .state-details.show-state-details {
+    left: 0%;
+}
+
+.state-details-heading {
+    text-align: center;
+    padding-top: 5px;
+    padding-bottom: 5px;
+}
+
+.state-details-click-tip {
+    position: absolute;
+    bottom: 6px;
+    right: 6px;
+    z-index: 9;
+    font-size: .9em;
+    font-weight: bold;
+}
+
+@media (min-width: 640px) {
+    .state-card {
+        flex-direction: row;
+        max-width: 700px;
+    }
+
+    .state-card .state-meta {
+        flex-basis: 40%;
+        height: auto;
+        min-width: 300px;
+        min-height: 200px;
+    }
+
+    .state-card .description {
+        flex-basis: 60%;
+        min-width: 350px;
+    }
+
+    .state-card .description:before {
+        -webkit-transform: skewX(-3deg);
+        transform: skewX(-3deg);
+        content: "";
+        background: #fff;
+        width: 30px;
+        position: absolute;
+        left: -10px;
+        top: 0;
+        bottom: 0;
+        z-index: -1;
+    }
+
+    .state-card.alt {
+        flex-direction: row-reverse;
+    }
+
+    .state-card.alt .description:before {
+        left: inherit;
+        right: -10px;
+        -webkit-transform: skew(3deg);
+        transform: skew(3deg);
+    }
+
+    .state-card.alt .state-details {
+        padding-left: 25px;
+    }
+}

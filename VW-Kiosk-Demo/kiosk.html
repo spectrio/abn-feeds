@@ -1,0 +1,806 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Volkswagen Kiosk</title>
+  <!-- Favico Code -->
+  <link rel="apple-touch-icon" sizes="57x57" href="assets/favico/apple-icon-57x57.png">
+  <link rel="apple-touch-icon" sizes="60x60" href="assets/favico/apple-icon-60x60.png">
+  <link rel="apple-touch-icon" sizes="72x72" href="assets/favico/apple-icon-72x72.png">
+  <link rel="apple-touch-icon" sizes="76x76" href="assets/favico/apple-icon-76x76.png">
+  <link rel="apple-touch-icon" sizes="114x114" href="assets/favico/apple-icon-114x114.png">
+  <link rel="apple-touch-icon" sizes="120x120" href="assets/favico/apple-icon-120x120.png">
+  <link rel="apple-touch-icon" sizes="144x144" href="assets/favico/apple-icon-144x144.png">
+  <link rel="apple-touch-icon" sizes="152x152" href="assets/favico/apple-icon-152x152.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="assets/favico/apple-icon-180x180.png">
+  <link rel="icon" type="image/png" sizes="192x192" href="assets/favico/android-icon-192x192.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="assets/favico/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="96x96" href="assets/favico/favicon-96x96.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="assets/favico/favicon-16x16.png">
+  <link rel="manifest" href="assets/favico/manifest.json">
+  <meta name="msapplication-TileColor" content="#ffffff">
+  <meta name="msapplication-TileImage" content="assets/favico/ms-icon-144x144.png">
+  <meta name="theme-color" content="#ffffff">
+  <!-- End Favico Code -->
+  <!-- Bootstrap v4 Core CSS -->
+  <link href="assets/css/third/bootstrap.min.css?v=1.0.0" rel="stylesheet" type="text/css">
+  <!-- jQuery UI CSS -->
+  <link href="assets/css/third/jquery-ui.min.css" rel="stylesheet" type="text/css">
+  <!-- FontAwesome Icons -->
+  <link href="assets/fontawesome/all.min.css?v=1.0.0" rel="stylesheet" type="text/css">
+  <!-- Custom Fonts -->
+  <link href="assets/css/fonts.css?v=1.0.0" rel="stylesheet" type="text/css">
+  <!-- Ekko Lightbox CSS -->
+  <link href="assets/css/third/ekko-lightbox.css?v=1.0.0" rel="stylesheet" type="text/css">
+  <!-- States Map Custom CSS -->
+  <link href="assets/css/states.css?v=1.0.0" rel="stylesheet" type="text/css">
+  <!-- Virtual Keyboard CSS -->
+  <link href="assets/css/third/keyboard/keyboard.min.css?v=1.0.0" rel="stylesheet" type="text/css">
+  <!-- Range Slider CSS -->
+  <link href="assets/css/third/rangeslider.css?v=1.0.0" rel="stylesheet" type="text/css">
+  <!-- Odometer Minimal Theme CSS -->
+  <link href="assets/css/third/odometer-theme-minimal.css?v=1.0.0" rel="stylesheet" type="text/css">
+  <!-- ToastUI Charts CSS -->
+  <link href="assets/css/third/tui-chart.css?v=1.0.0" rel="stylesheet" type="text/css">
+  <!-- Custom CSS -->
+  <link href="assets/css/kiosk.css?v=1.0.0" rel="stylesheet" type="text/css">
+</head>
+
+<body>
+  <!--Loading Screen-->
+  <div id="load-screen">
+    <div class="load-screen-logo">
+      <img src="assets/images/logos/volkswagen_white.png" />
+    </div>
+    <div class="load-screen-spinner">
+      <div class="sk-folding-cube">
+        <div class="sk-cube1 sk-cube"></div>
+        <div class="sk-cube2 sk-cube"></div>
+        <div class="sk-cube4 sk-cube"></div>
+        <div class="sk-cube3 sk-cube"></div>
+      </div>
+    </div>
+
+  </div>
+  <!--/.Loading Screen-->
+  <div id="card-testing"></div>
+  <!--SideNav Menu-->
+  <nav class="navbar navbar-expand-sm sidenav base-colors">
+    <!--<div class="sidenav-close"><i class="fas fa-times"></i></div>-->
+    <ul class="navbar-nav sidenav-menu">
+      <!--SideNav Links-->
+      <li class="nav-item charging-map-link"><a style="cursor: pointer;">
+          <!--<img src="assets/icons/ev_charging_icon.png" style="max-height: 52px; padding-bottom: 5px;" />-->
+          <i class="fas fa-charging-station"></i>
+          <span>Charging Stations</span>
+        </a></li>
+      <li class="nav-item ev-incentives-link"><a style="cursor: pointer;">
+          <!--<img src="assets/icons/ev_incentive_icon.png" style="max-height: 52px; padding-bottom: 5px;" />-->
+          <i class="fas fa-money-bill-wave"></i>
+          <span>EV Incentives</span>
+        </a></li>
+      <li class="nav-item ev-calculator-link"><a style="cursor: pointer;">
+          <!--<img src="assets/icons/ev_incentive_icon.png" style="max-height: 52px; padding-bottom: 5px;" />-->
+          <i class="fas fa-calculator"></i>
+          <span>EV TCO Calculator</span>
+        </a></li>
+      <li class="nav-item vw-accessories-link"><a style="cursor: pointer;">
+          <!--<img src="assets/icons/parts_accessories_icon.png" style="max-height: 52px; padding-bottom: 5px;" />-->
+          <i class="fas fa-tools"></i>
+          <span>Volkswagen Accessories</span>
+        </a></li>
+      <li class="nav-item social-link instagram-link"><a style="cursor: pointer;">
+          <!--<img src="assets/icons/instagram_icon.png" style="max-height: 52px; padding-bottom: 5px;" />-->
+          <i class="fab fa-instagram"></i>
+          <span>VW USA Instagram</span>
+        </a></li>
+      <li class="nav-item social-link twitter-link"><a style="cursor: pointer;">
+          <!--<img src="assets/icons/twitter_icon.png" style="max-height: 48px; padding-bottom: 5px;" />-->
+          <i class="fab fa-twitter"></i>
+          <span>VW USA Twitter</span>
+        </a></li>
+      <li class="nav-item vw-website-link"><a style="cursor: pointer;">
+          <img src="assets/images/logos/volkswagen_white.png" style="max-height: 46px; padding-bottom: 10px;" />
+          <span>Website</span>
+        </a></li>
+      <li class="nav-item go-home-link" style="position: fixed; right: 100px;"><a style="cursor: pointer;">
+          <!--<img src="assets/icons/twitter_icon.png" style="max-height: 48px; padding-bottom: 5px;" />-->
+          <i class="fas fa-door-open"></i>
+          <span>Return to Home</span>
+        </a></li>
+      <li class="nav-item reload-kiosk-link" style="position: fixed; right: 0;"><a style=" cursor: pointer;">
+          <i class="fas fa-retweet fa-2x"></i>
+          <span>Reload Kiosk</span>
+        </a>
+      </li>
+      <!--/.SideNav Links-->
+    </ul>
+  </nav>
+  <!--/.SideNav Menu-->
+  <!--Header-->
+  <div class="sidenav-toggle base-colors">
+    <div class="sidenav-icon-container">
+      <i class="fas fa-chevron-down fa-2x"></i>
+    </div>
+  </div>
+  <!--/.Header-->
+  <!--Carousel Wrapper-->
+  <div id="videos" class="carousel slide carousel-fade" data-ride="carousel" data-interval="false">
+    <!--Video-->
+    <video class="video-fluid d-block w-100" src="video/H_DS_VOLKSWAGEN_INTERACTIVE SCREEN_2019_DB.mp4" autoplay loop
+      muted></video>
+    <!--/.Video-->
+    <!--/.Controls-->
+  </div>
+  <!--/.Carousel Wrapper-->
+  <!--Charging Map Wrapper-->
+  <div class="charging-map-holder">
+    <div id="charging-map-controls" style="position: absolute; top: 67%; right: 0.5%; z-index: 9;">
+      <div class="btn-group-vertical">
+        <button type="button" class="btn btn-default btn-map-kiosk map-state-selection"><i
+            class="fas fa-flag-usa fa-2x"></i></button>
+        <button type="button" class="btn btn-default btn-map-kiosk map-driving-directions"><i
+            class="fas fa-directions fa-2x"></i></button>
+        <button type="button" class="btn btn-default btn-map-kiosk map-recenter-rezoom"><i
+            class="fas fa-compress-arrows-alt fa-2x"></i></button>
+      </div>
+      <div id="charging-map-full-map" style="display: none;"></div>
+    </div>
+    <div id="charging-map">
+    </div>
+    <div id="map-blocking-footer"
+      style="position: absolute; left: 0px; bottom: 0px; background: transparent; height: 32px; width: 1920px;"></div>
+    <div id="map-driving-directions-sidebar">
+      <button id="map-driving-directions-sidebar-close" class="btn btn-danger"><i class="fas fa-times"></i></button>
+      <h3 style="padding-top: 30px; text-align: center; color: #ffffff;">Driving Directions</h3>
+      <hr size=3 />
+      <div class="form-group row">
+        <div class="col-sm-12">
+          <div class="input-group">
+            <div class="input-group-prepend">
+              <span class="input-group-text"><strong>From</strong></span>
+            </div>
+            <input type="text" size="8" id="map-input-from-origin" name="map-input-from-origin"
+              class="form-control geocomplete-input" placeholder="Origin">
+            <div class="input-group-append">
+              <span class="input-group-text"><i class="fas fa-map-pin"></i></span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="form-group row">
+        <!--<label for="map-input-arriving-to" class="col-sm-4 col-form-label">Arriving To</label>-->
+        <div class="col-sm-12">
+          <div class="input-group">
+            <div class="input-group-prepend">
+              <span class="input-group-text"><strong>To</strong></span>
+            </div>
+            <input type="text" size="8" id="map-input-to-destination" class="form-control geocomplete-input"
+              name="map-input-to-destination" placeholder="Destination">
+            <div class="input-group-append">
+              <span class="input-group-text"><i class="fas fa-map-pin"></i></span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="form-group row" style="padding-top: 40px;">
+        <div class="col-sm-6" style="text-align: left;">
+          <button id="map-form-button-clear-route" name="map-form-button-clear-route" class="btn btn-danger"><i
+              class="fas fa-times"></i>
+            Clear Route
+          </button>
+        </div>
+        <div class="col-sm-6" style="text-align: right;">
+          <button id="map-form-button-calculate-route" name="map-form-button-calculate-route" class="btn btn-disabled"
+            disabled><i class="fas fa-route"></i>
+            Calculate Route
+          </button>
+        </div>
+      </div>
+    </div>
+    <div id="map-state-selection-sidebar">
+      <button id="map-state-selection-sidebar-close" class="btn btn-danger"><i class="fas fa-times"></i></button>
+      <h3 style="padding-top: 10px; text-align: center; color: #ffffff;">State Selection</h3>
+      <div id="map-state-selection-container"></div>
+    </div>
+  </div>
+  <!--/.Charging Map Wrapper-->
+  <!--Incentives Wrapper-->
+  <div class="ev-incentives-holder">
+    <div id="ev-incentives">
+      <div class="map-row row">
+        <div class="map-col col">
+        </div>
+        <div class="inc-col col">
+          <div class="row">
+            <div class="col-12">
+              <div id="state-info-popup" style="margin: 0px auto;"></div>
+            </div>
+            <div class="col-12" style="z-index: 1010;">
+              <h3 id="incentives-state-title"></h3>
+              <div id="incentives-list"></div>
+            </div>
+          </div>
+        </div>
+        <div id="ev-incentives-map-legend" style="position: absolute; top: 38%; left: 48%; width: 500px; z-index: 999;">
+          <div class="row">
+            <div class="col-sm-1">
+              <div
+                style="width: 30px; height: 30px; background: #3fb53f; border: 2px solid #131D5F; border-radius: 15px;">
+                &nbsp;</div>
+            </div>
+            <div class="col-sm-11">
+              <h6 style="margin-top: 4px;">Cash Incentives</h6>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-sm-1">
+              <div
+                style="width: 30px; height: 30px; background: #317dce; border: 2px solid #131D5F; border-radius: 15px;">
+                &nbsp;</div>
+            </div>
+            <div class="col-sm-11">
+              <h6 style="margin-top: 4px;">Other Incentives</h6>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-sm-1">
+              <div
+                style="width: 30px; height: 30px; background: #6FA8E4; border: 2px solid #131D5F; border-radius: 15px;">
+                &nbsp;</div>
+            </div>
+            <div class="col-sm-11">
+              <h6 style="margin-top: 4px;">No Incentives</h6>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="row inc-calc-row" style="margin-top: 30px;">
+        <div class="inc-calc-col col-sm-4">
+          <h5 class="inc-calc-header">Potential Tax Credit</h5>
+          <h1 class="inc-calc-cash-display"><span class="inc-calc-format-dollar">$</span><span
+              id="inc-calc-federal-incentives" class="odometer">7,500</span></h1>
+          <p class="inc-calc-subtext" style="margin-top: -18px;">Potential Federal Income Tax credit for the purchase of
+            a new
+            e-Golf.</p>
+        </div>
+        <div class="inc-calc-col col-sm-4">
+          <h5 class="inc-calc-header">Potential State Incentive</h5>
+          <h1 class="inc-calc-cash-display"><span class="inc-calc-format-dollar">$</span><span
+              id="inc-calc-state-incentives" class="odometer">0</span></h1>
+          <p id="inc-calc-state-incentives-text" class="inc-calc-subtext" style="width: 550px; margin-top: -18px;">
+            Select a state to see incentives</p>
+        </div>
+        <div class="inc-calc-col col-sm-4">
+          <h5 class="inc-calc-header">Estimated Annual Fuel Savings <small>(15,000 miles driven per year)</small></h5>
+          <h1 class="inc-calc-cash-display"><span class="inc-calc-format-dollar">$</span><span
+              id="inc-calc-fuel-savings-one" class="inc-calc-fuel-savings odometer">965</span></h1>
+          <p class="inc-calc-subtext" style="width: 400px; margin-top: -18px;">Slide to calculate annual fuel savings
+            based on your car's
+            current mileage. Fuel
+            savings vary by location.</p>
+          <input type="range" min="12" max="45" step="1" value="24">
+          <p class="inc-calc-mpg-counter">24 MPG</p>
+        </div>
+      </div>
+      <div class="row inc-calc-row">
+        <div class="inc-calc-col inc-calc-color-block col-sm-8" style="border-right: 20px solid white;">
+          <h5 class="inc-calc-header inc-calc-header-pad">Estimated Federal and State Incentives</h5>
+          <h1 class="inc-calc-cash-display"><span class="inc-calc-format-dollar">$</span><span
+              id="inc-calc-federal-and-state-incentives" class="odometer">10,000</span></h1>
+          </h1>
+        </div>
+        <div class="inc-calc-col inc-calc-color-block col-sm-4">
+          <h5 class="inc-calc-header inc-calc-header-pad">Estimated Annual Fuel Savings <small>(15,000 miles driven per
+              year)</small></h5>
+          <h1 class="inc-calc-cash-display"><span class="inc-calc-format-dollar">$</span><span
+              id="inc-calc-fuel-savings-two" class="inc-calc-fuel-savings odometer">965</span></h1>
+        </div>
+      </div>
+      <hr style="position: absolute; top: 70%; width: 100%; border: 5px solid black; display: none;" />
+    </div>
+  </div>
+  <!--/.Incentives Wrapper-->
+  <!--EV Calculator Wrapper-->
+  <div class="ev-calculator-holder">
+    <div id="ev-calculator">
+      <div class="calc-select-row row">
+        <div class="calc-col calc-select-car col">
+          <div class="card" style="width: 100%; height: 100%;">
+            <div class="card-header">
+              <h3 class="card-title">Select Vehicles for Comparison<button id="calc-clear-comparison"
+                  name="calc-clear-comparison" style="float: right;" class="btn btn-danger"><i class="fas fa-times"></i>
+                  Clear Comparison
+                  List</button></h3>
+            </div>
+            <div class="card-body">
+              <div class="form-row">
+                <div class="form-group col-md-2">
+                  <label for="calc-select-year">Year</label>
+                  <select id="calc-select-year" name="calc-select-year" class="form-control form-control-lg"
+                    style="cursor: default;">
+                    <option value="2019">2019</option>
+                    <option value="2018">2018</option>
+                    <option value="2017">2017</option>
+                    <option value="2016">2016</option>
+                    <option value="2015">2015</option>
+                    <option value="2014">2014</option>
+                    <option value="2013">2013</option>
+                    <option value="2012">2012</option>
+                    <option value="2011">2011</option>
+                    <option value="2010">2010</option>
+                    <option value="2009">2009</option>
+                    <option value="2008">2008</option>
+                    <option value="2007">2007</option>
+                    <option value="2006">2006</option>
+                    <option value="2005">2005</option>
+                    <option value="2004">2004</option>
+                  </select>
+                </div>
+                <div class="form-group col-md-3">
+                  <label for="calc-select-make">Make</label>
+                  <select id="calc-select-make" name="calc-select-make" class="form-control form-control-lg"
+                    style="cursor: default;" disabled>
+                    <option value="">Make</option>
+                  </select>
+                </div>
+                <div class="form-group col-md-5">
+                  <label for="calc-select-model">Model</label>
+                  <select id="calc-select-model" name="calc-select-model" class="form-control form-control-lg"
+                    style="cursor: default;" disabled>
+                    <option value="">Model</option>
+                  </select>
+                </div>
+                <div class="form-group col-md-2">
+                  <button id="calc-add-vehicle" name="calc-add-vehicle" class="btn btn-disabled" disabled>Add
+                    Vehicle</button>
+                </div>
+              </div>
+              <div id="vehicle-list-container" style="height: 360px; max-height: 360px; overflow-y: scroll;">
+                <ul id="vehicle-compare-list-group" class="list-group list-group-flush">
+                  <li id="40769_list_item" class="list-group-item" data-model="2019 Volkswagen e-Golf" data-citympg="27"
+                    data-highwaympg="30" data-fueltype="Electric">
+                    <div class="row">
+                      <div><i class="fas fa-lock" style="color: #d4af37;"></i></div>
+                      <div class="col-sm-2" style="padding-right: 0px;">
+                        <img src="https://fueleconomy.gov/feg/photos/2019_VW_e-Golf.jpg" alt="e-Golf Automatic (A1)"
+                          height="50">
+                      </div>
+                      <div class="col" style="padding: 0px;">
+                        2019 Volkswagen e-Golf<br><small>Automatic (A1) EV<br>$31,895.00 - $38,895.00</small>
+                      </div>
+                      <div class="col-sm-3">
+                        <div class="input-group">
+                          <div class="input-group-prepend">
+                            <span class="input-group-text">$</span>
+                          </div>
+                          <input type="text" name="40769_price" class="form-control msrp_input validate" value="31,895">
+                        </div>
+                      </div>
+                      <div class="col-sm-2" style="padding: 0px;">
+                        27/30 kWh/100m
+                      </div>
+                      <div class="col-sm-1" style="padding: 0px;">
+                        Electric
+                      </div>
+                    </div>
+                  </li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="calc-col calc-select-fuel col">
+          <div class="card" style="width: 100%; height: 100%;">
+            <div class="card-header">
+              <h3 class="card-title">Vehicle Usage<button id="calc-reset-vehicle-usage" name="calc-reset-vehicle-usage"
+                  style="float: right;" class="btn btn-danger"><i class="fas fa-times"></i> Reset Values</button></h3>
+            </div>
+            <div class="card-body">
+              <div class="row">
+                <div class="col">
+                  <h5>Normal Daily Use</h5>
+                  <div class="form-group row">
+                    <label for="usage-driving-distance" class="col-sm-7 col-form-label">Average Daily Driving
+                      Distance</label>
+                    <div class="col-sm-5">
+                      <div class="input-group">
+                        <input type="text" size="8" id="usage-driving-distance" name="usage-driving-distance"
+                          class="form-control keyboard-validate-miles" value="34" onchange="calcTotalDistance();">
+                        <div class="input-group-append">
+                          <span class="input-group-text">miles</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="form-group row">
+                    <label for="usage-days-per-week" class="col-sm-7 col-form-label">Days Per Week</label>
+                    <div class="col-sm-5">
+                      <div class="input-group">
+                        <select name="usage-days-per-week" id="usage-days-per-week" class="form-control"
+                          onchange="calcTotalDistance();">
+                          <option value="1">1</option>
+                          <option value="2">2</option>
+                          <option value="3">3</option>
+                          <option value="4">4</option>
+                          <option value="5" selected="">5</option>
+                          <option value="6">6</option>
+                          <option value="7">7</option>
+                        </select>
+                        <div class="input-group-append">
+                          <span class="input-group-text">days</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="form-group row">
+                    <label for="usage-weeks-per-year" class="col-sm-7 col-form-label">Weeks Per Year</label>
+                    <div class="col-sm-5">
+                      <div class="input-group">
+                        <select name="usage-weeks-per-year" id="usage-weeks-per-year" class="form-control"
+                          onchange="calcTotalDistance();">
+                          <option value="40">40</option>
+                          <option value="41">41</option>
+                          <option value="42">42</option>
+                          <option value="43">43</option>
+                          <option value="44">44</option>
+                          <option value="45">45</option>
+                          <option value="46">46</option>
+                          <option value="47">47</option>
+                          <option value="48">48</option>
+                          <option value="49" selected="">49</option>
+                          <option value="50">50</option>
+                          <option value="51">51</option>
+                          <option value="52">52</option>
+                        </select>
+                        <div class="input-group-append">
+                          <span class="input-group-text">weeks</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="form-group row">
+                    <label for="usage-percent-highway" class="col-sm-7 col-form-label">Percent Highway</label>
+                    <div class="col-sm-5">
+                      <div class="input-group">
+                        <input type="text" size="8" id="usage-percent-highway"
+                          class="form-control keyboard-validate-percent" value="45" name="usage-percent-highway"
+                          onchange="calcTotalDistance();">
+                        <div class="input-group-append">
+                          <span class="input-group-text">%</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="col">
+                  <h5>Other Trips</h5>
+                  <div class="form-group row">
+                    <label for="usage-annual-mileage-other" class="col-sm-7 col-form-label">Annual Mileage</label>
+                    <div class="col-sm-5">
+                      <div class="input-group">
+                        <input type="text" size="8" id="usage-annual-mileage-other" name="usage-annual-mileage-other"
+                          class="form-control keyboard-validate-miles" value="3596" onchange="calcTotalDistance();">
+                        <div class="input-group-append">
+                          <span class="input-group-text">miles</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="form-group row">
+                    <label for="usage-percent-highway-other" class="col-sm-7 col-form-label">Percent Highway</label>
+                    <div class="col-sm-5">
+                      <div class="input-group">
+                        <input type="text" size="8" id="usage-percent-highway-other"
+                          class="form-control keyboard-validate-percent" value="45" name="usage-percent-highway-other"
+                          onchange="calcTotalDistance();">
+                        <div class="input-group-append">
+                          <span class="input-group-text">%</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <h5>Electricity Use</h5>
+                  <div class="form-group row">
+                    <label for="percent_highway_other" class="col-sm-7 col-form-label">Select a state so we can find
+                      the electricity price and calculate the emissions from generating
+                      electricity in your area.</label>
+                    <div class="col-sm-5">
+                      <select id="calc-resident-state" name="calc-resident-state" class="form-control">
+                        <option value="">Select a State</option>
+                        <option value="AL">Alabama</option>
+                        <option value="AK">Alaska</option>
+                        <option value="AZ">Arizona</option>
+                        <option value="AR">Arkansas</option>
+                        <option value="CA">California</option>
+                        <option value="CO">Colorado</option>
+                        <option value="CT">Connecticut</option>
+                        <option value="DE">Delaware</option>
+                        <option value="DC">Dist. of Columbia</option>
+                        <option value="FL">Florida</option>
+                        <option value="GA">Georgia</option>
+                        <option value="HI">Hawaii</option>
+                        <option value="ID">Idaho</option>
+                        <option value="IL">Illinois</option>
+                        <option value="IN">Indiana</option>
+                        <option value="IA">Iowa</option>
+                        <option value="KS">Kansas</option>
+                        <option value="KY">Kentucky</option>
+                        <option value="LA">Louisiana</option>
+                        <option value="ME">Maine</option>
+                        <option value="MD">Maryland</option>
+                        <option value="MA">Massachusetts</option>
+                        <option value="MI">Michigan</option>
+                        <option value="MN">Minnesota</option>
+                        <option value="MS">Mississippi</option>
+                        <option value="MO">Missouri</option>
+                        <option value="MT">Montana</option>
+                        <option value="NE">Nebraska</option>
+                        <option value="NV">Nevada</option>
+                        <option value="NH">New Hampshire</option>
+                        <option value="NJ">New Jersey</option>
+                        <option value="NM">New Mexico</option>
+                        <option value="NY">New York</option>
+                        <option value="NC">North Carolina</option>
+                        <option value="ND">North Dakota</option>
+                        <option value="OH">Ohio</option>
+                        <option value="OK">Oklahoma</option>
+                        <option value="OR">Oregon</option>
+                        <option value="PA">Pennsylvania</option>
+                        <option value="RI">Rhode Island</option>
+                        <option value="SC">South Carolina</option>
+                        <option value="SD">South Dakota</option>
+                        <option value="TN" selected="">Tennessee</option>
+                        <option value="TX">Texas</option>
+                        <option value="UT">Utah</option>
+                        <option value="VT">Vermont</option>
+                        <option value="VA">Virginia</option>
+                        <option value="WA">Washington</option>
+                        <option value="WV">West Virginia</option>
+                        <option value="WI">Wisconsin</option>
+                        <option value="WY">Wyoming</option>
+                      </select>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="card-footer">
+              <div class="row">
+                <div class="col-sm-3">
+                  <h5>Total Distances:</h5>
+                </div>
+                <div class="col">
+                  Annual:&nbsp;<span id="calc-totals-annual">0</span> miles
+                </div>
+                <div class="col">
+                  City:&nbsp;<span id="calc-totals-city">0</span> miles
+                </div>
+                <div class="col">
+                  Highway:&nbsp;<span id="calc-totals-highway">0</span> miles
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="calc-results-row row">
+        <div class="col">
+          <div class="card" style="width: 100%; height: 100%;">
+            <div class="card-header">
+              <h3 class="card-title">Total Cost of Ownership - Results
+                <div class="btn-group btn-group-toggle" data-toggle="buttons"
+                  style="padding-left: 20px; margin-top: -4px;">
+                  <label class="btn btn-default btn-primary active">
+                    <input type="radio" name="chart-options-usage" value="chart-annual-fuel-usage" autocomplete="off"
+                      checked>
+                    Annual Fuel Usage
+                  </label>
+                  <label class="btn btn-default">
+                    <input type="radio" name="chart-options-usage" value="chart-annual-electricity-usage"
+                      autocomplete="off"> Annual Electricity Usage
+                  </label>
+                </div>
+                <div class="btn-group btn-group-toggle" data-toggle="buttons"
+                  style="padding-left: 20px; margin-top: -4px;">
+                  <label class="btn btn-default btn-primary active">
+                    <input type="radio" name="chart-options-costs" value="chart-annual-fuel-electric-cost"
+                      autocomplete="off" checked>
+                    Annual Fuel/Electric Cost
+                  </label>
+                  <label class="btn btn-default">
+                    <input type="radio" name="chart-options-costs" value="chart-annual-operating-cost"
+                      autocomplete="off"> Annual Operating Cost
+                  </label>
+                  <label class="btn btn-default">
+                    <input type="radio" name="chart-options-costs" value="chart-cost-per-mile" autocomplete="off">
+                    Cost per
+                    Mile
+                  </label>
+                  <label class="btn btn-default">
+                    <input type="radio" name="chart-options-costs" value="chart-annual-carbon-emissions"
+                      autocomplete="off"> Annual Carbon Emissions
+                  </label>
+                </div>
+                <button id="calc-begin-graphing" name="calc-begin-graphing" style="float: right;"
+                  class="btn btn-success"><i class="fas fa-calculator"></i> Calculate
+                  Report</button>
+              </h3>
+            </div>
+            <div class="card-body">
+              <div class="card" style="width: 100%">
+                <div id="has-chart-calculator" class="row" style="display: none;">
+                  <div class="col">
+                    <div id="chart-annual-fuel-usage" class="build-chart chart-options-usage"></div>
+                    <div id="chart-annual-electricity-usage" class="build-chart chart-options-usage"></div>
+                  </div>
+                  <div class="col">
+                    <div id="chart-annual-fuel-electric-cost" class="build-chart chart-options-costs"></div>
+                    <div id="chart-annual-operating-cost" class="build-chart chart-options-costs"></div>
+                    <div id="chart-cost-per-mile" class="build-chart chart-options-costs"></div>
+                    <div id="chart-annual-carbon-emissions" class="build-chart chart-options-costs"></div>
+                  </div>
+                  <div class="col">
+                    <div id="chart-total-cost-of-ownership"></div>
+                  </div>
+                  <div class="col">
+                    <div id="chart-state-electricity-generation"></div>
+                  </div>
+                </div>
+                <div id="empty-chart-calculator" class="row">
+                  <div class="col">
+                    <h1>No results have been calculated yet</h1>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!--/.EV Calculator Wrapper-->
+  <!--Social Media Wrapper-->
+  <div class="social-holder">
+    <div id="vw-instagram-feed"></div>
+    <div id="vw-twitter-feed" style="text-align: center;"></div>
+  </div>
+  <!--/.Social Media Wrapper-->
+  <!--iFrame-->
+  <div class="iframe-holder">
+    <iframe id="page-loader" name="page-loader" src="" frameborder="0"
+      sandbox="allow-scripts allow-same-origin"></iframe>
+  </div>
+  <!--/.iFrame-->
+  <!--Timeout Modal-->
+  <div class="modal fade" id="timeout-modal" tabindex="-1" role="dialog" aria-labelledby="timeoutModal"
+    aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+      <div class="modal-content">
+        <div class="modal-header idle-modal-header">
+          <h3 class="modal-title">Kiosk Seems Idle</h3>
+        </div>
+        <div class="modal-body">
+          <h5>Would you like to continue browsing?</h5>
+        </div>
+        <div class="modal-footer">
+          <button id="idle-dismiss-button" type="button" class="btn btn-primary idle-modal-button">
+            <h3>Continue</h3>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!--/.Timeout Modal-->
+  <!--Incentives Modal-->
+  <div class="modal fade" id="incentives-modal" tabindex="-1" role="dialog" aria-labelledby="incentivesModal"
+    aria-hidden="true">
+    <div id="incentives-dialog" class="modal-dialog modal-dialog-centered modal-lg" role="document">
+      <div class="modal-content" style="border: 2px solid #5e8fcd; border-radius: 6px;">
+        <div class="modal-header" style="background-color: #131D5F;">
+          <h3 id="incentives-detail-heading" style="padding-top: 0px;"></h3>
+        </div>
+        <div class="modal-body">
+          <div id="incentives-clicked-state"></div>
+          <div id="incentives-detail">
+            <div id="incentives-detail-text">
+            </div>
+            <div id="incentives-detail-references">
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!--/.Calculator Modal-->
+  <!--Vehicle List Item Template-->
+  <script id="template-vehicle-list-item" type="text/template">
+    <li id="{{vehicleID}}_list_item" class="list-group-item"
+      data-model="{{modelName}}" data-citympg="{{cityMPG}}" data-highwaympg="{{highwayMPG}}" data-fueltype="{{vehicleFuelType}}">
+        <div class="row">
+          <div class="remove-comparison-vehicle" style="cursor: pointer;" data-removeitem="{{vehicleID}}_list_item">
+            <i class="fas fa-times" style="color: #ff0000;"></i>
+          </div>
+          <div class="col-sm-2" style="padding-right: 0px;">
+            {{vehicleImage}}
+          </div>
+          <div class="col" style="padding: 0px;">
+            {{vehicleDescription}}
+          </div>
+          <div class="col-sm-3">
+            <div class="input-group">
+              <div class="input-group-prepend">
+                <span class="input-group-text">$</span>
+              </div>
+              <input type="text" name="{{vehicleID}}_price" class="form-control msrp_input validate" value="{{vehiclePrice}}">
+            </div>
+          </div>
+          <div class="col-sm-2" style="padding: 0px;">
+            {{vehicleMPG}}
+          </div>
+          <div class="col-sm-1" style="padding: 0px;">
+            {{vehicleFuelType}}
+          </div>
+        </div>
+      </li>
+  </script>
+  <!--/.Vehicle List Item Template-->
+  <!-- Include Sentry Key, Polyfills, and ABN Debug Log before anything, set to false to disable -->
+  <script>
+    // Set Sentry Key for Project
+    var sentryKey = 'https://77364b08bec4460ab1bb979dab3fc63f@sentry.io/1768591';
+    // Control debug logging
+    var isDebug = true;
+  </script>
+  <script src="assets/js/abn/widget-polyfills.js"></script>
+  <script src="assets/js/third/sentry.bundle.5.5.min.js"></script>
+  <script src="assets/js/abn/widget-debug-log.js"></script>
+  <!-- Base libraries including jQuery and Moment for Date and Time -->
+  <script src="assets/js/third/jquery-3.3.1.min.js"></script>
+  <script src="assets/js/third/jquery-ui-custom.min.js"></script>
+  <script src="assets/js/third/moment.js"></script>
+  <!-- Bootstrap v4 -->
+  <script src="assets/js/third/bootstrap.bundle.min.js"></script>
+  <!-- Velocity.JS Animation Library -->
+  <script src="assets/js/third/velocity.js"></script>
+  <script src="assets/js/third/velocity.ui.js"></script>
+  <!-- Ekko Lightbox JS Library -->
+  <script src="assets/js/third/ekko-lightbox.js"></script>
+  <!-- Google Maps API -->
+  <script
+    src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAgZbLV-SWrBq_GfOrAL727JdL4SKSVzA8&region=US&libraries=places">
+  </script>
+  <script src="assets/js/third/markerclusterer.js"></script>
+  <!-- Virtual Keyboard -->
+  <script src="assets/js/third/keyboard/jquery.keyboard.min.js"></script>
+  <script src="assets/js/third/keyboard/jquery.keyboard.extension-all.min.js"></script>
+  <!-- Range Slider -->
+  <script src="assets/js/third/rangeslider.min.js"></script>
+  <!-- Odometer Animations -->
+  <script src="assets/js/third/odometer.min.js"></script>
+  <!-- ToastUI Charts JS -->
+  <script src="assets/js/third/raphael.min.js"></script>
+  <script src="assets/js/third/tui-code-snippet.js"></script>
+  <script src="assets/js/third/tui-chart.min.js"></script>
+  <!-- Global Variables -->
+  <!-- <script type="text/javascript" src="manifest.js"></script> -->
+  <!-- Load US Map Data and State Data from JSON -->
+  <script src="assets/json/us-map-states.js?v=1.0.0"></script>
+  <!-- Load Charging Points Map Data from JSON -->
+  <script src="assets/json/charging-points.js?v=1.0.0"></script>
+  <!-- Custom JS Scripts -->
+  <script src="assets/js/kiosk.js?v=1.0.0"></script>
+  <script src="assets/js/idletimer.js?v=1.0.0"></script>
+  <!-- NREL EV API Scripts -->
+  <script src="assets/js/nrel/stations.js?v=1.0.0"></script>
+  <script src="assets/js/nrel/incentives.js?v=1.0.0"></script>
+  <script src="assets/js/nrel/calculator.js?v=1.0.0"></script>
+  <!-- Social Media Scripts -->
+  <script src="assets/js/third/jquery.instagramFeed.js?v=1.0.0"></script>
+  <script src="assets/js/social/instagram.js?v=1.0.0"></script>
+</body>
+
+</html>
