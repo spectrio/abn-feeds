@@ -88,24 +88,3 @@
 * `docker-compose up -d nginx mysql --build` to re-build and start docker services
 
 See [Laradock documentation](https://laradock.io/getting-started) for more reference.
-
-
-NewRelic Installation
-- You want to follow the installation Guide from when you log into newrelic.
-- Add Data -> Guided Install -> Application Management (APM) -> PHP -> Follow remaining steps
-- Copy the newrelic license and user api keys as they will be used in the app
-
-
-Change PHP version On the Server
-Please use to below command
-
-`sudo update-alternatives --config php`
-
-After run above command select the PHP version that you need to use.
-
-Press to keep the current choice[*], or type selection number: For example 2
-
-After switching below command used to restart the PHP and Nginx server.
-
-`sudo service nginx restart`
-sudo service php7.1-fpm or php7.2-fpm  restart
