@@ -106,7 +106,7 @@ class CachingController extends Controller
         $data['banned'] = array();
 
         // Load News Stories and Process
-        $xml = simplexml_load_file('/var/www/feeds/digicache/AllStories.xml');
+        $xml = simplexml_load_file(getenv('FEEDS_DIRECTORY_PATH') . '/digicache/AllStories.xml');
 
         if (property_exists($xml, 'news')) {
             $bannedCount = 0;
@@ -141,7 +141,7 @@ class CachingController extends Controller
             }
         }
 
-        $xml = simplexml_load_file('/var/www/feeds/digicache/ThisDate.xml');
+        $xml = simplexml_load_file(getenv('FEEDS_DIRECTORY_PATH') .'/digicache/ThisDate.xml');
 
         if (property_exists($xml, 'item')) {
             $bannedCount = 0;
@@ -174,7 +174,7 @@ class CachingController extends Controller
             }
         }
 
-        $xml = simplexml_load_file('/var/www/feeds/digicache/BornDate.xml');
+        $xml = simplexml_load_file(getenv('FEEDS_DIRECTORY_PATH') .'/digicache/BornDate.xml');
 
         if (property_exists($xml, 'item')) {
             $bannedCount = 0;
@@ -263,7 +263,7 @@ class CachingController extends Controller
         $data['banned'] = array();
 
         // Load News Stories and Process
-        $xml = simplexml_load_file('/var/www/feeds/digicache/AllStories.xml');
+        $xml = simplexml_load_file(getenv('FEEDS_DIRECTORY_PATH') . '/digicache/AllStories.xml');
 
         if (property_exists($xml, 'news')) {
             $bannedCount = 0;
@@ -298,7 +298,7 @@ class CachingController extends Controller
             }
         }
 
-        $xml = simplexml_load_file('/var/www/feeds/digicache/ThisDate.xml');
+        $xml = simplexml_load_file(getenv('FEEDS_DIRECTORY_PATH') .'/digicache/ThisDate.xml');
 
         if (property_exists($xml, 'item')) {
             $bannedCount = 0;
@@ -331,7 +331,7 @@ class CachingController extends Controller
             }
         }
 
-        $xml = simplexml_load_file('/var/www/feeds/digicache/BornDate.xml');
+        $xml = simplexml_load_file(getenv('FEEDS_DIRECTORY_PATH') .'/digicache/BornDate.xml');
 
         if (property_exists($xml, 'item')) {
             $bannedCount = 0;
@@ -440,9 +440,9 @@ class CachingController extends Controller
             $feedType = strtolower($feedType);
             $accountID = substr($channel, 4, 5);
             if ($accountID == '91002' || $accountID == '12345') {
-                $baseDomain = 'https://gm.abnetwork.com';
+                $baseDomain = getenv('HTTPS') . getenv('GM_ENDPOINT');
             } else {
-                $baseDomain = 'https://control.abnetwork.com';
+                $baseDomain = getenv('HTTPS'). getenv('REMOTE_BETA_ENDPOINT');
             }
             $this->cacheExpireMinutes = 5;
             switch ($feedType) {
@@ -509,7 +509,7 @@ class CachingController extends Controller
             Log::info("============================================================");
             Log::info("Beginning Logo Cache Process with Slice Size of: " . $sliceSize);
             Log::info("============================================================");
-            $url = 'https://gm.abnetwork.com/source/get_all_account_numbers/XX12345XX4752ZZ';
+            $url = getenv('HTTPS') . getenv('GM_ENDPOINT').'/source/get_all_account_numbers/XX12345XX4752ZZ';
             $data = json_decode(file_get_contents($url), true);
             $accountList = array();
             foreach ($data as $row) {
@@ -626,7 +626,7 @@ class CachingController extends Controller
 						}
 
 						// $savePath = '/var/www/scala-weather-feed/aggregator/feeds/digicache/' . $account->accountZip . '.XML';
-						$savePath = '/var/www/feeds/digicache/' . $account->accountZip . '.XML';
+						$savePath = getenv('FEEDS_DIRECTORY_PATH') . '/digicache/' . $account->accountZip . '.XML';
 						$newrelic_log->pushHandler(new Handler(Logger::INFO));
 						$newrelic_log->info('XML file is saved for account ' . $account->accountID, array('platform' => 'Feeds Aggregator', 'type' => 'info', 'message' => 'File saved for account ' . $account->accountID));
 

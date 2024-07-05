@@ -10,7 +10,7 @@ class Feeds_model extends CI_Model
 
 	private function CallESBAPI($method, $url, $queryData = NULL, $postData = NULL, $token = NULL)
 	{
-		$api_url = "http://abnsbs.com/api/v2/files/service_ros/";
+		$api_url = getenv('ABNSBS') . "/api/v2/files/service_ros/";
 		$query = http_build_query($queryData);
 		$url = $api_url.$url."?".$query;
 		//error_log('ESBAPI URL: '.$url, 0);
@@ -67,7 +67,7 @@ class Feeds_model extends CI_Model
 	
 	private function TestESBAPI($method, $url, $queryData = NULL, $postData = NULL, $token = NULL)
 	{
-		$api_url = "http://abnsbs.com/api/v2/files/service_ros/";
+		$api_url = getenv('ABNSBS'). "/api/v2/files/service_ros/";
 		$query = http_build_query($queryData);
 		$url = $api_url.$url."?".$query;
 		//error_log('ESBAPI URL: '.$url, 0);

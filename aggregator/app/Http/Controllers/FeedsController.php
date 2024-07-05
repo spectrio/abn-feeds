@@ -54,9 +54,9 @@ class FeedsController extends Controller
             $feedType = strtolower($feedType);
             $accountID = substr($channel,4,5);
             if ($accountID == '91002' || $accountID == '12345') {
-                $baseDomain = 'https://gm.abnetwork.com';
+                $baseDomain = getenv('HTTPS') . getenv('GM_ENDPOINT');
             } else {
-                $baseDomain = 'https://control.abnetwork.com';
+                $baseDomain = getenv('HTTPS'). getenv('REMOTE_BETA_ENDPOINT');
             }
             $this->cacheExpireMinutes = 5;
             switch ($feedType) {
@@ -111,7 +111,7 @@ class FeedsController extends Controller
                 unset($returnConfig['mac']);
 
                 $channel = $returnConfig['locationID'];
-                $url = "https://control.abnetwork.com/source/get_dtv/";
+                $url = getenv('HTTPS') . getenv('REMOTE_BETA_ENDPOINT') . "/source/get_dtv/";
                 $accountNumber = substr($channel,4,5);
                 $json = file_get_contents($url.$channel."/abn-scala-request-".strrev($channel));
                 $obj = json_decode($json);
@@ -119,8 +119,8 @@ class FeedsController extends Controller
                 $workData = $obj[0];
                 $pathParts = pathinfo($workData->dtv_chrome_logo);
                 $basePath = $pathParts['dirname'];
-                $returnConfig['lightLogo'] = str_replace("/content/","https://abncdn.s3.amazonaws.com/",$basePath."/".$accountNumber."_ABN_LIVE_LOGO_WHITE.png");
-                $returnConfig['darkLogo'] = str_replace("/content/","https://abncdn.s3.amazonaws.com/",$basePath."/".$accountNumber."_ABN_LIVE_LOGO.png");
+                $returnConfig['lightLogo'] = str_replace("/content/",getenv('HTTPS') . getenv('ABNCDN'),$basePath."/".$accountNumber."_ABN_LIVE_LOGO_WHITE.png");
+                $returnConfig['darkLogo'] = str_replace("/content/",getenv('HTTPS') . getenv('ABNCDN'),$basePath."/".$accountNumber."_ABN_LIVE_LOGO.png");
 
                 $returnConfig['dealerCodeJSON'] = $returnConfig['dealerCode'];
                 $returnConfig['dealerCode'] = json_decode($returnConfig['dealerCode'], true);
