@@ -11,7 +11,7 @@
            * laradock
        ```
 3. Go to  laradock folder `cd laradock` then configure `nginx/` and `.env`
-   * In `nginx/sites/` folder, add a new file called `abn_feeds.conf` and add the following
+   * In `nginx/sites/` folder, add a new file called `abn_feeds_app.conf` and add the following
        ```
        #server {
        #    listen 80;
