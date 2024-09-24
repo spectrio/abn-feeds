@@ -3,7 +3,7 @@
 ---
 1. Install docker to your local machine and launch it. https://docs.docker.com/get-docker/
 2. Add entry to your hosts file by `sudo vim /etc/hosts`
-   * Add `127.0.0.1 scalafeeds.aggregator.test` then press `:wq!`
+   * Add `127.0.0.1 abn.scalafeeds.test` then press `:wq!`
    * Run `git submodule add https://github.com/Laradock/laradock.git`
       * Folder structure should look like this
        ```
@@ -11,7 +11,7 @@
            * laradock
        ```
 3. Go to  laradock folder `cd laradock` then configure `nginx/` and `.env`
-   * In `nginx/sites/` folder, add a new file called `scala_feeds.conf` and add the following
+   * In `nginx/sites/` folder, add a new file called `abn_feeds.conf` and add the following
        ```
        #server {
        #    listen 80;
@@ -26,8 +26,8 @@
            # listen [::]:443 ssl ipv6only=on;
            # ssl_certificate /etc/nginx/ssl/default.crt;
            # ssl_certificate_key /etc/nginx/ssl/default.key;
-           server_name scalafeeds.aggregator.test;
-           root /var/www/public;
+           server_name abn.scalafeeds.test;
+           root /var/www; #/public if modern laravel
            index index.php index.html index.htm;
            location / {
                 try_files $uri $uri/ /index.php$is_args$args;
@@ -55,7 +55,7 @@
        }
        ```
    * cd back into laradock folder
-   * Run `cp .env.example .env` to create .env file and change `PHP_VERSION=8.3` to `PHP_VERSION=7.4` \
+   * Run `cp .env.example .env` to create .env file and change `PHP_VERSION=8.3` to `PHP_VERSION=7.1` \
      Change `MYSQL_VERSION=latest` to `MYSQL_VERSION=5.7` \
      if you're having trouble starting Mysql image. Backup this then `~/.laradock/mysql/` folder then delete.
      Set zsh shell values to true for shell syntax highlighting
@@ -70,42 +70,21 @@
      mysql:```
    <br><br>
 
-4. Import the `control` and `expand` database to your laradock local db
-5. Once you have the db's imported to your laradock database, change the .env for database to have a hosrt of `mysql` instead of localhost. This is needed for laradock. For e.g:
-   DB_USER = "root"
-   DB_HOST = "mysql"
-   DB_PASS  = 'root'
-   DB_NAME = 'control'
+5. Shell into the docker container:
+   - docker-compose exec --user=root workspace bash
+   - and run `composer install`
 
-6. To run the nginx and mysql service via docket, do the command `docker-compose up -d nginx mysql --build`
-7. Now open [abn.gmportal.com](http://scalafeeds.aggregator.test) in your browser
+6. Run php artisan key:generate
+
+7. *Optional: To change port of laradock, go into laradock directory and edit the .env file and set `NGINX_HOST_HTTP_PORT` to whatever port you want. E.g `NGINX_HOST_HTTP_PORT=8081`
+8. To run the nginx and mysql service via docket, do the command `docker-compose up -d nginx mysql --build`
+9. Now open [abn.scalafeeds.test](http://abn.scalafeeds.test) in your browser
 ---
 
 ## Docker commands
-* `optools` to go into docker instance
+* `docker-compose exec --user=laradock workspace zsh` to go into docker instance
 * `docker-compose up -d nginx mysql` to start
 * `docker-compose down` to start
 * `docker-compose up -d nginx mysql --build` to re-build and start docker services
 
 See [Laradock documentation](https://laradock.io/getting-started) for more reference.
-
-
-NewRelic Installation
-- You want to follow the installation Guide from when you log into newrelic.
-- Add Data -> Guided Install -> Application Management (APM) -> PHP -> Follow remaining steps
-- Copy the newrelic license and user api keys as they will be used in the app
-
-
-Change PHP version On the Server
-Please use to below command
-
-`sudo update-alternatives --config php`
-
-After run above command select the PHP version that you need to use.
-
-Press to keep the current choice[*], or type selection number: For example 2
-
-After switching below command used to restart the PHP and Nginx server.
-
-`sudo service nginx restart`
-sudo service php7.1-fpm or php7.2-fpm  restart

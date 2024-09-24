@@ -1,4 +1,7 @@
 <?php
+require_once(__DIR__ . '/vendor/autoload.php'); // Load Composer's autoloader
+$dotenv = Dotenv\Dotenv::create(__DIR__);
+$dotenv->load();
 
 /*
  *---------------------------------------------------------------
