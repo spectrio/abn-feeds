@@ -2,27 +2,23 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
-
-use App\Http\Requests;
 use \AWS;
-use \Config;
 use \Cache;
 use \Image;
+use \Response;
 use App\cacheAccount;
 use App\cacheScroller;
 use App\cacheTheme;
 use App\badWords;
+use App\Jobs\ProcessWeatherData;
 use Carbon\Carbon;
-use Exception;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Response;
-
-use Monolog\Logger;
-use NewRelic\Monolog\Enricher\{Handler, Processor};
+use Illuminate\Support\Facades\Bus;
 
 class CachingController extends Controller
 {
+    public $cacheExpireMinutes;
+
     public function __construct()
     {
         $this->cacheExpireMinutes = 10;
@@ -106,7 +102,7 @@ class CachingController extends Controller
         $data['banned'] = array();
 
         // Load News Stories and Process
-        $xml = simplexml_load_file(getenv('FEEDS_DIRECTORY_PATH') . '/digicache/AllStories.xml');
+        $xml = simplexml_load_file('/var/www/feeds/digicache/AllStories.xml');
 
         if (property_exists($xml, 'news')) {
             $bannedCount = 0;
@@ -141,7 +137,7 @@ class CachingController extends Controller
             }
         }
 
-        $xml = simplexml_load_file(getenv('FEEDS_DIRECTORY_PATH') .'/digicache/ThisDate.xml');
+        $xml = simplexml_load_file('/var/www/feeds/digicache/ThisDate.xml');
 
         if (property_exists($xml, 'item')) {
             $bannedCount = 0;
@@ -174,7 +170,7 @@ class CachingController extends Controller
             }
         }
 
-        $xml = simplexml_load_file(getenv('FEEDS_DIRECTORY_PATH') .'/digicache/BornDate.xml');
+        $xml = simplexml_load_file('/var/www/feeds/digicache/BornDate.xml');
 
         if (property_exists($xml, 'item')) {
             $bannedCount = 0;
@@ -263,7 +259,7 @@ class CachingController extends Controller
         $data['banned'] = array();
 
         // Load News Stories and Process
-        $xml = simplexml_load_file(getenv('FEEDS_DIRECTORY_PATH') . '/digicache/AllStories.xml');
+        $xml = simplexml_load_file('/var/www/feeds/digicache/AllStories.xml');
 
         if (property_exists($xml, 'news')) {
             $bannedCount = 0;
@@ -298,7 +294,7 @@ class CachingController extends Controller
             }
         }
 
-        $xml = simplexml_load_file(getenv('FEEDS_DIRECTORY_PATH') .'/digicache/ThisDate.xml');
+        $xml = simplexml_load_file('/var/www/feeds/digicache/ThisDate.xml');
 
         if (property_exists($xml, 'item')) {
             $bannedCount = 0;
@@ -331,7 +327,7 @@ class CachingController extends Controller
             }
         }
 
-        $xml = simplexml_load_file(getenv('FEEDS_DIRECTORY_PATH') .'/digicache/BornDate.xml');
+        $xml = simplexml_load_file('/var/www/feeds/digicache/BornDate.xml');
 
         if (property_exists($xml, 'item')) {
             $bannedCount = 0;
@@ -440,9 +436,9 @@ class CachingController extends Controller
             $feedType = strtolower($feedType);
             $accountID = substr($channel, 4, 5);
             if ($accountID == '91002' || $accountID == '12345') {
-                $baseDomain = getenv('HTTPS') . getenv('GM_ENDPOINT');
+                $baseDomain = 'https://gm.abnetwork.com';
             } else {
-                $baseDomain = getenv('HTTPS'). getenv('REMOTE_BETA_ENDPOINT');
+                $baseDomain = 'https://control.abnetwork.com';
             }
             $this->cacheExpireMinutes = 5;
             switch ($feedType) {
@@ -509,7 +505,7 @@ class CachingController extends Controller
             Log::info("============================================================");
             Log::info("Beginning Logo Cache Process with Slice Size of: " . $sliceSize);
             Log::info("============================================================");
-            $url = getenv('HTTPS') . getenv('GM_ENDPOINT').'/source/get_all_account_numbers/XX12345XX4752ZZ';
+            $url = 'https://gm.abnetwork.com/source/get_all_account_numbers/XX12345XX4752ZZ';
             $data = json_decode(file_get_contents($url), true);
             $accountList = array();
             foreach ($data as $row) {
@@ -594,68 +590,33 @@ class CachingController extends Controller
 
     public function fillWeather()
     {
-        ini_set('max_execution_time', 0);
-        set_time_limit(0);
-        libxml_use_internal_errors(true);
+        $startTime = microtime(true);
 
-        // Monolog Logger
-        $newrelic_log = new Logger('log');
-        $newrelic_log->pushProcessor(new Processor);
+        $accountsToUpdate = cacheAccount::whereNotNull('accountZip')->distinct()->get(['accountZip'])->toArray();
 
-        $handler = new Handler;
-        $handler->setLicenseKey('ee2d839bc858a1b5feef951fb834dbdeFFFFNRAL');
+        Log::info("Start processing weather data for total accounts of: " . count($accountsToUpdate));
 
-        $context = stream_context_create(['http' => ['ignore_errors' => true]]);
-        $accountsToUpdate = cacheAccount::all();
-        foreach ($accountsToUpdate as $account) {
-			try {
-				if (preg_match('/[0-9]{5}/', trim($account->accountID))) {
-					if (preg_match('/[0-9]{5}/', trim($account->accountZip))) {
-						$url = 'https://wxapi.digichief.com/api/weather/GetWeather/04a3f908-d85f-489e-a90e-f90f4011e314?zipcode=' . $account->accountZip . '&format=xml';
-						$result = file_get_contents($url, false, $context);
+        $batchSize = 500; // Adjust batch size as needed
+        $batches = array_chunk($accountsToUpdate, $batchSize);
 
-						if ($result == false) {
-							throw new Exception('Could not fetch content from URL: ' . $url);
-						}
+        foreach ($batches as $batch) {
+            $cacheKey = 'weather_data_' . md5(json_encode($batch));
 
-						$xmlFile = simplexml_load_string($result);
-						Log::info('XML is saved for account ' . $account->accountID);
-
-						if ($xmlFile === false) {
-							throw new Exception('Error parsing XML from URL: ' . $url);
-						}
-
-						// $savePath = '/var/www/scala-weather-feed/aggregator/feeds/digicache/' . $account->accountZip . '.XML';
-						$savePath = getenv('FEEDS_DIRECTORY_PATH') . '/digicache/' . $account->accountZip . '.XML';
-						$newrelic_log->pushHandler(new Handler(Logger::INFO));
-						$newrelic_log->info('XML file is saved for account ' . $account->accountID, array('platform' => 'Feeds Aggregator', 'type' => 'info', 'message' => 'File saved for account ' . $account->accountID));
-
-						if ($xmlFile->asXML($savePath) === false) {
-							throw new Exception('Could not retrieve weather for account ' . $account->accountID . ' with zip code ' . $account->accountZip . ' at URL ' . $url);
-						}
-					}
-				}
-			} catch (Exception $e) {
-				Log::error($e->getMessage());
-				Log::error('Error processing account ' . $account->accountID . ' with zip code ' . $account->accountZip . ': ');
-
-				$newrelic_log->pushHandler(new Handler(Logger::CRITICAL));
-				$newrelic_log->critical('Error processing account ' . $account->accountID . ' with zip code ' . $account->accountZip, array('platform' => 'Feeds Aggregator', 'type' => 'error', 'message' => $e->getMessage()));
-
-				if (extension_loaded('newrelic')) { // Ensure PHP agent is available
-					newrelic_notice_error($e);
-				}
-			}
+            if (!Cache::has($cacheKey)) {
+                Log::info("---------------------------------------------------");
+                Log::info("Processing cacheKey " . $cacheKey);
+                Bus::dispatch(new ProcessWeatherData($batch));
+                Cache::put($cacheKey, true, Carbon::now()->addMinutes(1)); // Cache for 60 minutes
+            } else {
+                Log::info("Skipping batch, already processed recently. Key: " . $cacheKey);
+            }
         }
 
-        $newrelic_log->pushHandler(new Handler(Logger::INFO));
-		$newrelic_log->info('All accounts are updated');
+        $endTime = microtime(true);
+        $executionTimeInSeconds = $endTime - $startTime;
+        $executionTimeInMinutes = round($executionTimeInSeconds / 60, 2);
+        Log::info("Weather data processing took " . $executionTimeInMinutes . " minutes.");
 
-        // No error
-        if (extension_loaded('newrelic')) { // Ensure PHP agent is available
-            newrelic_record_custom_event("All accounts are updated", []);
-        }
-
-        return Response::make($accountsToUpdate, '200')->header('Content-Type', 'application/json');
+        return response()->json(['status' => 'Weather data processed'], 200);
     }
 }
