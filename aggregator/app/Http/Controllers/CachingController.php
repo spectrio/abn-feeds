@@ -11,12 +11,15 @@ use App\cacheScroller;
 use App\cacheTheme;
 use App\badWords;
 use App\Jobs\ProcessWeatherData;
+use App\Traits\NewRelicLoggerTrait;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Bus;
 
 class CachingController extends Controller
 {
+    use NewRelicLoggerTrait;
+
     public $cacheExpireMinutes;
 
     public function __construct()
@@ -115,6 +118,7 @@ class CachingController extends Controller
                     $storyLength = strlen($storyText);
                     $punctuation = array(',', ':', '-', '!', '?', '.', ';', '\'');
                     $checkWords = array_unique($storyWords);
+                    $bannedWord = '';
                     foreach ($checkWords as $checkTarget) {
                         if (in_array(str_replace($punctuation, '', strtolower($checkTarget)), $badWords)) {
                             $banned = true;
@@ -272,6 +276,7 @@ class CachingController extends Controller
                     $storyLength = strlen($storyText);
                     $punctuation = array(',', ':', '-', '!', '?', '.', ';', '\'');
                     $checkWords = array_unique($storyWords);
+                    $bannedWord = '';
                     foreach ($checkWords as $checkTarget) {
                         if (in_array(str_replace($punctuation, '', strtolower($checkTarget)), $badWords)) {
                             $banned = true;
@@ -590,6 +595,8 @@ class CachingController extends Controller
 
     public function fillWeather()
     {
+        $newrelic_log = $this->setupNewRelicLogger();
+
         $startTime = microtime(true);
 
         // Get cache account via accountzip
@@ -618,6 +625,13 @@ class CachingController extends Controller
         $executionTimeInSeconds = $endTime - $startTime;
         $executionTimeInMinutes = round($executionTimeInSeconds / 60, 2);
         Log::info("Weather data processing took " . $executionTimeInMinutes . " minutes.");
+
+        $newrelic_log->info('All accounts are updated');
+
+        // No error
+        if (extension_loaded('newrelic')) { // Ensure PHP agent is available
+            newrelic_record_custom_event("All accounts are updated", []);
+        }
 
         return response()->json(['status' => 'Weather data processed'], 200);
     }
