@@ -615,7 +615,7 @@ class CachingController extends Controller
                 Log::info("---------------------------------------------------");
                 Log::info("Processing cacheKey " . $cacheKey);
                 Bus::dispatch(new ProcessWeatherData($batch));
-                Cache::put($cacheKey, true, Carbon::now()->addMinutes(1)); // Cache for 60 minutes
+                Cache::put($cacheKey, true, Carbon::now()->addMinutes(55)); // Cache for 55 minutes
             } else {
                 Log::info("Skipping batch, already processed recently. Key: " . $cacheKey);
             }
