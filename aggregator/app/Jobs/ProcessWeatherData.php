@@ -34,36 +34,59 @@ class ProcessWeatherData extends Job
         $failCounter = 0;
 
         foreach ($this->accounts as $account) {
-            if (!empty($account['accountZip']) && preg_match('/[0-9]{5}/', trim($account['accountZip']))) {
-                $url = 'https://wxapi.digichief.com/api/weather/GetWeather/04a3f908-d85f-489e-a90e-f90f4011e314?zipcode=' . $account['accountZip'] . '&format=xml';
-                $promises[] = $client->getAsync($url)->then(
-                    function ($response) use ($account, &$counter, $newrelic_log) {
-                        $result = $response->getBody()->getContents();
-                        $xmlFile = simplexml_load_string($result);
-                        if ($xmlFile !== false) {
-                            $savePath = base_path('feeds/digicache/') . $account['accountZip'] . '.XML';
-                            $xmlFile->asXML($savePath);
+            Log::info("Account from process weather data: ");
+            Log::info($account);
+            try{
+                if (!empty($account['accountZip']) && preg_match('/[0-9]{5}/', trim($account['accountZip']))) {
+                    $url = 'https://wxapi.digichief.com/api/weather/GetWeather/04a3f908-d85f-489e-a90e-f90f4011e314?zipcode=' . $account['accountZip'] . '&format=xml';
+                    $promises[] = $client->getAsync($url)->then(
+                        function ($response) use ($account, &$counter, $newrelic_log) {
+                            $result = $response->getBody()->getContents();
+                            $xmlFile = simplexml_load_string($result);
+                            if ($xmlFile !== false) {
+                                Log::info("is not false");
+                                Log::info("counter before is " . $counter);
+                                Log::info("get path for feeds is " . getenv('FEEDS_DIRECTORY_PATH'));
+                                $savePath = getenv('FEEDS_DIRECTORY_PATH') . '/digicache/' . $account['accountZip'] . '.XML';
+                                if ($xmlFile->asXML($savePath) === false) {
+                                    throw new Exception('Could not retrieve weather for zip code ' . $account->accountZip . ' at URL ' . $url);
+                                }
 
-                            $newrelic_log->pushHandler(new Handler(Logger::INFO));
-                            $newrelic_log->info('XML file is saved for account ' . $account['accountZip'], array('platform' => 'Feeds Aggregator', 'type' => 'info', 'message' => 'File saved for account ' . $account['accountZip']  . " Count: ". $counter));
+                                Log::info("savePath is " . $savePath);
 
-                            ++$counter; // Completed processing for this account
-                            Log::info('Processing account with Zipcode: '. $account['accountZip'] . " Processed count: " . $counter);
-                        } else {
-                            throw new \Exception('Error parsing XML for Zipcode ' . $account['accountZip']);
+                                $newrelic_log->pushHandler(new Handler(Logger::INFO));
+                                $newrelic_log->info('XML file is saved for account ' . $account['accountZip'], array('platform' => 'Feeds Aggregator', 'type' => 'info', 'message' => 'File saved for account ' . $account['accountZip']  . " Count: ". $counter));
+                                Log::info("counter after is " . $counter);
+
+                                ++$counter; // Completed processing for this account
+                                Log::info('Processing account with Zipcode: '. $account['accountZip'] . " Processed count: " . $counter);
+                            } else {
+                                throw new \Exception('Error parsing XML for Zipcode ' . $account['accountZip']);
+                            }
+                        },
+                        function ($exception) use ($account, &$failCounter, $newrelic_log) {
+                            ++$failCounter;
+                            $newrelic_log->pushHandler(new Handler(Logger::CRITICAL));
+                            $newrelic_log->critical('Error processing account ' . $account['accountZip'] . ' with zip code ' . $account['accountZip'], array('platform' => 'Feeds Aggregator', 'type' => 'error', 'message' => $exception->getMessage()));
+
+                            if (extension_loaded('newrelic')) { // Ensure PHP agent is available
+                                newrelic_notice_error($exception);
+                            }
                         }
-                    },
-                    function ($exception) use ($account, &$failCounter, $newrelic_log) {
-                        ++$failCounter;
-                        $newrelic_log->pushHandler(new Handler(Logger::CRITICAL));
-                        $newrelic_log->critical('Error processing account ' . $account['accountZip'] . ' with zip code ' . $account['accountZip'], array('platform' => 'Feeds Aggregator', 'type' => 'error', 'message' => $exception->getMessage()));
+                    );
+                }
+            } catch (Exception $e) {
+				Log::error($e->getMessage());
+				Log::error('Error processing with zip code ' . $account['accountZip'] . ': ');
 
-                        if (extension_loaded('newrelic')) { // Ensure PHP agent is available
-                            newrelic_notice_error($exception);
-                        }
-                    }
-                );
-            }
+				$newrelic_log->pushHandler(new Handler(Logger::CRITICAL));
+				$newrelic_log->critical('Error processing account with zip code ' . $account['accountZip'], array('platform' => 'Feeds Aggregator', 'type' => 'error', 'message' => $e->getMessage()));
+
+				if (extension_loaded('newrelic')) { // Ensure PHP agent is available
+					newrelic_notice_error($e);
+				}
+			}
+                
         }
 
         // Using Promise to make asynchronous

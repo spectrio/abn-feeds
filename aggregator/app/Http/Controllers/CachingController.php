@@ -592,6 +592,7 @@ class CachingController extends Controller
     {
         $startTime = microtime(true);
 
+        // Get cache account via accountzip
         $accountsToUpdate = cacheAccount::whereNotNull('accountZip')->distinct()->get(['accountZip'])->toArray();
 
         Log::info("Start processing weather data for total accounts of: " . count($accountsToUpdate));
@@ -600,6 +601,7 @@ class CachingController extends Controller
         $batches = array_chunk($accountsToUpdate, $batchSize);
 
         foreach ($batches as $batch) {
+            // cache key to trigger with TTL of 60 minutes per script for the `/usr/local/bin/cache_digichief_weather.sh` cron job
             $cacheKey = 'weather_data_' . md5(json_encode($batch));
 
             if (!Cache::has($cacheKey)) {
