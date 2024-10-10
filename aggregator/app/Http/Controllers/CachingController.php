@@ -141,7 +141,7 @@ class CachingController extends Controller
             }
         }
 
-        $xml = simplexml_load_file('/var/www/feeds/digicache/AllStories.xml');
+        $xml = simplexml_load_file('/var/www/feeds/digicache/ThisDate.xml');
 
         if (property_exists($xml, 'item')) {
             $bannedCount = 0;
@@ -441,10 +441,10 @@ class CachingController extends Controller
             $feedType = strtolower($feedType);
             $accountID = substr($channel, 4, 5);
             if ($accountID == '91002' || $accountID == '12345') {
-				$baseDomain = 'https://gm.abnetwork.com';
-			} else {
-				$baseDomain = 'https://control.abnetwork.com';
-			}
+                $baseDomain = 'https://gm.abnetwork.com';
+            } else {
+                $baseDomain = 'https://control.abnetwork.com';
+            }
             $this->cacheExpireMinutes = 5;
             switch ($feedType) {
                 case 'scroller':
