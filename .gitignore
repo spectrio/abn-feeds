@@ -13,3 +13,4 @@ digicache/*
 .idea
 .zip
 .log
+*laradock

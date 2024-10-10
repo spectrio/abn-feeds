@@ -4,7 +4,7 @@ class Kiosk extends CI_Controller {
 
 	public function __construct() {
 		parent::__construct();
-		$this->data['feeds_server'] = "http://127.0.0.1"; //"http://scalafeeds.abnetwork.com";
+		$this->data['feeds_server'] = getenv('HTTP') . getenv('FEEDS_ABNETWORK'); //"http://127.0.0.1"; //"http://scalafeeds.abnetwork.com";
 	}
 	
 	public function index()

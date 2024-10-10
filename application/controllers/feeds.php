@@ -31,7 +31,7 @@ class Feeds extends CI_Controller {
     }
     
     public function index()
-    {
+    { 
         $this->load->view('feeds');
     }
     
@@ -975,7 +975,7 @@ class Feeds extends CI_Controller {
              echo print_r($customerScrollers, true);*/
             
             $xml = false;
-            $scrollerCacheFile = '/var/www/feeds/digicache/FinalScrollerCache.xml';
+            $scrollerCacheFile = getenv('FEEDS_DIRECTORY_PATH') . '/digicache/FinalScrollerCache.xml';
             if (file_exists($scrollerCacheFile)) {
                 if (filesize($scrollerCacheFile) > 1) {
                     $xml = simplexml_load_file($scrollerCacheFile);
@@ -1098,7 +1098,7 @@ class Feeds extends CI_Controller {
              echo print_r($customerScrollers, true);*/
             
             $xml = false;
-            $scrollerCacheFile = '/var/www/feeds/digicache/FinalScrollerCache.xml';
+            $scrollerCacheFile = getenv('FEEDS_DIRECTORY_PATH') . '/digicache/FinalScrollerCache.xml';
             if (file_exists($scrollerCacheFile)) {
                 if (filesize($scrollerCacheFile) > 1) {
                     $xml = simplexml_load_file($scrollerCacheFile);
@@ -1602,7 +1602,7 @@ class Feeds extends CI_Controller {
                     $accountNumber = substr($workData->channel,0,5);
                     $pathParts = pathinfo($workData->dtv_chrome_logo);
                     $basePath = $pathParts['dirname'];
-                    $basePath = str_replace("/content/","https://abncdn.s3.amazonaws.com/", $basePath);
+                    $basePath = str_replace("/content/",getenv('HTTPS') . getenv('ABNCDN'), $basePath);
                     $workData->lightlogo = $basePath."/".$accountNumber."_ABN_LIVE_LOGO_WHITE.png";
                     $workData->darklogo = $basePath."/".$accountNumber."_ABN_LIVE_LOGO.png";
                     $data['query'][0] = $workData;

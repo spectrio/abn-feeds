@@ -1,0 +1,6 @@
+[submodule "aggregator/laradock"]
+	path = aggregator/laradock
+	url = https://github.com/Laradock/laradock.git
+[submodule "laradock"]
+	path = laradock
+	url = https://github.com/Laradock/laradock.git
