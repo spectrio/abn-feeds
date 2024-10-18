@@ -1,5 +1,21 @@
 <?php if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 
+/**
+ * @property CI_Config $config
+ * @property CI_Loader $load
+ * @property CI_Output $output
+ * @property Remote_model $remote_model
+ * @property string $assetServer
+ * @property string $assetDirectory
+ * @property string $assetThemeDirectory
+ * @property string $assetNetworksDirectory
+ * @property string $assetDataDirectory
+ * @property string $assetWeatherIconDirectory
+ * @property string $assetLocalThemeDirectory
+ * @property string $assetLocalMenuboardDirectory
+ * @property string $assetLocalIconDirectory
+ * @property string $assetLocalDirectory
+ */
 class Feeds extends CI_Controller {
     
     public function __construct() {
@@ -333,7 +349,7 @@ class Feeds extends CI_Controller {
                         echo $json;
                     } else {
                         ob_clean();
-                        header("HTTP/1.0 404 Not Found");
+                        $this->sendJsonResponse("No account information found for channel: $channel", 404);
                     }
                     break;
                 case 'CORSTEST7day':
@@ -379,11 +395,14 @@ class Feeds extends CI_Controller {
                         echo $json;
                     } else {
                         ob_clean();
-                        header("HTTP/1.0 404 Not Found");
+                        $this->sendJsonResponse("No account information found for channel: $channel", 404);
                     }
                     break;
                 default:
-                    header("HTTP/1.1 500 Internal Server Error");
+                    // header("HTTP/1.1 500 Internal Server Error");
+
+                    $this->sendJsonResponse("Internal Server Error", 500);
+
                     break;
             }
         }
@@ -662,7 +681,7 @@ class Feeds extends CI_Controller {
                         echo $json;
                     } else {
                         ob_clean();
-                        header("HTTP/1.0 404 Not Found");
+                        $this->sendJsonResponse("No account information found for channel: $channel", 404);
                     }
                     break;
                 default:
@@ -670,6 +689,23 @@ class Feeds extends CI_Controller {
                     break;
             }
         }
+    }
+
+    private function sendJsonResponse($message = '', $statusCode = 200)
+    {
+        $response = [
+            'error' => [
+                'code' => $statusCode,
+                'message' => $message,
+            ]
+        ];
+
+        $this->output
+            ->set_status_header($statusCode)
+            ->set_content_type('application/json', 'utf-8')
+            ->set_output(json_encode($response, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES))
+            ->_display();
+        exit;
     }
     
     

@@ -3,6 +3,7 @@
 namespace App\Jobs;
 
 use App\Traits\NewRelicLoggerTrait;
+use Exception;
 use GuzzleHttp\Client;
 use GuzzleHttp\Promise\Utils;
 use Illuminate\Support\Facades\Log;
@@ -12,6 +13,9 @@ class ProcessWeatherData extends Job
     use NewRelicLoggerTrait;
 
     protected $accounts;
+
+    public $failedAccounts = 0;
+    public $processedAccounts = 0;
 
     public function __construct($accounts)
     {
@@ -39,22 +43,22 @@ class ProcessWeatherData extends Job
                             $savePath = base_path('../feeds/digicache/') . $account['accountZip'] . '.XML';
                             try{
                                 $xmlFile->asXML($savePath);
-                                ++$counter; // Completed processing for this account
-                                // Log::info('Processing account with Zipcode: '. $account['accountZip'] . " Processed count: " . $counter);
+                                ++$this->processedAccounts; // Completed processing for this account
+                                Log::info('Processing account with Zipcode: '. $account['accountZip'] . " Processed count: " . $counter);
                             }catch(Exception $e){
                                 Log::error('Error Processing xml for '. $account['accountZip'] . " on Error: ". $e->getMessage());
                             }
                         } else {
-                            throw new \Exception('Error parsing XML for Zipcode ' . $account['accountZip']);
+                            throw new Exception('Error parsing XML for Zipcode ' . $account['accountZip']);
                         }
                     },
                     function ($exception) use ($account, &$failCounter, $newrelic_log) {
-                        ++$failCounter;
+                        ++$this->failedAccounts; // Failed processing for this account;
 
-                        $newrelic_log->critical('Error processing account with zip code ' . $account['accountZip'], array('platform' => 'Feeds Aggregator', 'type' => 'error', 'message' => $exception->getMessage()));
                         Log::error('Error Processing account with Zipcode: '. $account['accountZip'] . " Processed count: " . $failCounter . " Exception: " . $exception->getMessage());
 
                         if (extension_loaded('newrelic')) { // Ensure PHP agent is available
+                            $newrelic_log->critical('Error processing account with zip code ' . $account['accountZip'], array('platform' => 'Feeds Aggregator', 'type' => 'error', 'message' => $exception->getMessage()));
                             newrelic_notice_error($exception);
                         }
                     }

@@ -1,8 +1,11 @@
 <?php
-require_once(__DIR__ . '/vendor/autoload.php'); // Load Composer's autoloader
-$dotenv = Dotenv\Dotenv::create(__DIR__);
+require __DIR__ . '/vendor/autoload.php';
+$dotenv = Dotenv\Dotenv::createImmutable(__DIR__);
 $dotenv->load();
 
+foreach ($_ENV as $key => $value) {
+    putenv("$key=$value");
+}
 /*
  *---------------------------------------------------------------
  * APPLICATION ENVIRONMENT
@@ -21,7 +24,7 @@ $dotenv->load();
  * NOTE: If you change these, also change the error_reporting() code below
  *
  */
-	define('ENVIRONMENT', 'development');
+    define('ENVIRONMENT', getenv('CI_ENV') ?? 'development');
 /*
  *---------------------------------------------------------------
  * ERROR REPORTING

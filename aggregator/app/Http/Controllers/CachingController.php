@@ -604,8 +604,11 @@ class CachingController extends Controller
 
         Log::info("Start processing weather data for total accounts of: " . count($accountsToUpdate));
 
-        $batchSize = 500; // Adjust batch size as needed
+        $batchSize = 50; // Adjust batch size as needed
         $batches = array_chunk($accountsToUpdate, $batchSize);
+
+        $totalProcessedAccounts = 0;
+        $totalFailedAccounts = 0;
 
         foreach ($batches as $batch) {
             // cache key to trigger with TTL of 60 minutes per script for the `/usr/local/bin/cache_digichief_weather.sh` cron job
@@ -614,8 +617,14 @@ class CachingController extends Controller
             if (!Cache::has($cacheKey)) {
                 Log::info("---------------------------------------------------");
                 Log::info("Processing cacheKey " . $cacheKey);
-                Bus::dispatch(new ProcessWeatherData($batch));
-                Cache::put($cacheKey, true, Carbon::now()->addMinutes(55)); // Cache for 55 minutes
+
+                $job = new ProcessWeatherData($batch, 30);
+                dispatch($job);
+
+                $totalProcessedAccounts += $job->processedAccounts;
+                $totalFailedAccounts += $job->failedAccounts;
+
+                Cache::put($cacheKey, true, Carbon::now()->addMinutes(1)); // Cache for 60 minutes
             } else {
                 Log::info("Skipping batch, already processed recently. Key: " . $cacheKey);
             }
@@ -626,13 +635,19 @@ class CachingController extends Controller
         $executionTimeInMinutes = round($executionTimeInSeconds / 60, 2);
         Log::info("Weather data processing took " . $executionTimeInMinutes . " minutes.");
 
-        $newrelic_log->info('All accounts are updated');
-
         // No error
         if (extension_loaded('newrelic')) { // Ensure PHP agent is available
+            $newrelic_log->info('All accounts are updated');
             newrelic_record_custom_event("All accounts are updated", []);
         }
 
-        return response()->json(['status' => 'Weather data processed'], 200);
+        Log::info('Total processed accounts: '. $totalProcessedAccounts);
+        Log::info('Total failed accounts: '. $totalFailedAccounts);
+
+        return response()->json([
+            'status' => 'Weather data processed', 
+            'failedAccounts' => $totalFailedAccounts, 
+            'processedAccounts' => $totalProcessedAccounts
+        ], 200);
     }
 }
