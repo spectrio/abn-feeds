@@ -2,27 +2,26 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
-
-use App\Http\Requests;
 use \AWS;
-use \Config;
 use \Cache;
 use \Image;
+use \Response;
 use App\cacheAccount;
 use App\cacheScroller;
 use App\cacheTheme;
 use App\badWords;
+use App\Jobs\ProcessWeatherData;
+use App\Traits\NewRelicLoggerTrait;
 use Carbon\Carbon;
-use Exception;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Response;
-
-use Monolog\Logger;
-use NewRelic\Monolog\Enricher\{Handler, Processor};
+use Illuminate\Support\Facades\Bus;
 
 class CachingController extends Controller
 {
+    use NewRelicLoggerTrait;
+
+    public $cacheExpireMinutes;
+
     public function __construct()
     {
         $this->cacheExpireMinutes = 10;
@@ -119,6 +118,7 @@ class CachingController extends Controller
                     $storyLength = strlen($storyText);
                     $punctuation = array(',', ':', '-', '!', '?', '.', ';', '\'');
                     $checkWords = array_unique($storyWords);
+                    $bannedWord = '';
                     foreach ($checkWords as $checkTarget) {
                         if (in_array(str_replace($punctuation, '', strtolower($checkTarget)), $badWords)) {
                             $banned = true;
@@ -276,6 +276,7 @@ class CachingController extends Controller
                     $storyLength = strlen($storyText);
                     $punctuation = array(',', ':', '-', '!', '?', '.', ';', '\'');
                     $checkWords = array_unique($storyWords);
+                    $bannedWord = '';
                     foreach ($checkWords as $checkTarget) {
                         if (in_array(str_replace($punctuation, '', strtolower($checkTarget)), $badWords)) {
                             $banned = true;
@@ -594,68 +595,59 @@ class CachingController extends Controller
 
     public function fillWeather()
     {
-        ini_set('max_execution_time', 0);
-        set_time_limit(0);
-        libxml_use_internal_errors(true);
+        $newrelic_log = $this->setupNewRelicLogger();
 
-        // Monolog Logger
-        $newrelic_log = new Logger('log');
-        $newrelic_log->pushProcessor(new Processor);
+        $startTime = microtime(true);
 
-        $handler = new Handler;
-        $handler->setLicenseKey('ee2d839bc858a1b5feef951fb834dbdeFFFFNRAL');
+        // Get cache account via accountzip
+        $accountsToUpdate = cacheAccount::whereNotNull('accountZip')->distinct()->get(['accountZip'])->toArray();
 
-        $context = stream_context_create(['http' => ['ignore_errors' => true]]);
-        $accountsToUpdate = cacheAccount::all();
-        foreach ($accountsToUpdate as $account) {
-			try {
-				if (preg_match('/[0-9]{5}/', trim($account->accountID))) {
-					if (preg_match('/[0-9]{5}/', trim($account->accountZip))) {
-						$url = 'https://wxapi.digichief.com/api/weather/GetWeather/04a3f908-d85f-489e-a90e-f90f4011e314?zipcode=' . $account->accountZip . '&format=xml';
-						$result = file_get_contents($url, false, $context);
+        Log::info("Start processing weather data for total accounts of: " . count($accountsToUpdate));
 
-						if ($result == false) {
-							throw new Exception('Could not fetch content from URL: ' . $url);
-						}
+        $batchSize = 50; // Adjust batch size as needed
+        $batches = array_chunk($accountsToUpdate, $batchSize);
 
-						$xmlFile = simplexml_load_string($result);
-						Log::info('XML is saved for account ' . $account->accountID);
+        $totalProcessedAccounts = 0;
+        $totalFailedAccounts = 0;
 
-						if ($xmlFile === false) {
-							throw new Exception('Error parsing XML from URL: ' . $url);
-						}
+        foreach ($batches as $batch) {
+            // cache key to trigger with TTL of 60 minutes per script for the `/usr/local/bin/cache_digichief_weather.sh` cron job
+            $cacheKey = 'weather_data_' . md5(json_encode($batch));
 
-						// $savePath = '/var/www/scala-weather-feed/aggregator/feeds/digicache/' . $account->accountZip . '.XML';
-						$savePath = '/var/www/feeds/digicache/' . $account->accountZip . '.XML';
-						$newrelic_log->pushHandler(new Handler(Logger::INFO));
-						$newrelic_log->info('XML file is saved for account ' . $account->accountID, array('platform' => 'Feeds Aggregator', 'type' => 'info', 'message' => 'File saved for account ' . $account->accountID));
+            if (!Cache::has($cacheKey)) {
+                Log::info("---------------------------------------------------");
+                Log::info("Processing cacheKey " . $cacheKey);
 
-						if ($xmlFile->asXML($savePath) === false) {
-							throw new Exception('Could not retrieve weather for account ' . $account->accountID . ' with zip code ' . $account->accountZip . ' at URL ' . $url);
-						}
-					}
-				}
-			} catch (Exception $e) {
-				Log::error($e->getMessage());
-				Log::error('Error processing account ' . $account->accountID . ' with zip code ' . $account->accountZip . ': ');
+                $job = new ProcessWeatherData($batch, 30);
+                dispatch($job);
 
-				$newrelic_log->pushHandler(new Handler(Logger::CRITICAL));
-				$newrelic_log->critical('Error processing account ' . $account->accountID . ' with zip code ' . $account->accountZip, array('platform' => 'Feeds Aggregator', 'type' => 'error', 'message' => $e->getMessage()));
+                $totalProcessedAccounts += $job->processedAccounts;
+                $totalFailedAccounts += $job->failedAccounts;
 
-				if (extension_loaded('newrelic')) { // Ensure PHP agent is available
-					newrelic_notice_error($e);
-				}
-			}
+                Cache::put($cacheKey, true, Carbon::now()->addMinutes(1)); // Cache for 60 minutes
+            } else {
+                Log::info("Skipping batch, already processed recently. Key: " . $cacheKey);
+            }
         }
 
-        $newrelic_log->pushHandler(new Handler(Logger::INFO));
-		$newrelic_log->info('All accounts are updated');
+        $endTime = microtime(true);
+        $executionTimeInSeconds = $endTime - $startTime;
+        $executionTimeInMinutes = round($executionTimeInSeconds / 60, 2);
+        Log::info("Weather data processing took " . $executionTimeInMinutes . " minutes.");
 
         // No error
         if (extension_loaded('newrelic')) { // Ensure PHP agent is available
+            $newrelic_log->info('All accounts are updated');
             newrelic_record_custom_event("All accounts are updated", []);
         }
 
-        return Response::make($accountsToUpdate, '200')->header('Content-Type', 'application/json');
+        Log::info('Total processed accounts: '. $totalProcessedAccounts);
+        Log::info('Total failed accounts: '. $totalFailedAccounts);
+
+        return response()->json([
+            'status' => 'Weather data processed', 
+            'failedAccounts' => $totalFailedAccounts, 
+            'processedAccounts' => $totalProcessedAccounts
+        ], 200);
     }
 }

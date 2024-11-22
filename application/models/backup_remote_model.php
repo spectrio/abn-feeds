@@ -10,7 +10,7 @@ class Remote_model extends CI_Model
 	
 	public function get_account_details($channel = NULL) {
 		if (!is_null($channel)) {
-			$url = "https://control.abnetwork.com/source/get_account_details/";
+			$url = getenv('HTTPS'). getenv('REMOTE_BETA_ENDPOINT') . "/source/get_account_details/";
 			$account_id = substr($channel,4,5);
 
 			$feedsDB = $this->load->database('default', TRUE);
@@ -37,7 +37,7 @@ class Remote_model extends CI_Model
 	
 	public function get_appointments($appointmentType = NULL, $accountNumber = NULL) {
 		if (!is_null($appointmentType) && !is_null($accountNumber)) {
-			$url = "https://appointments.abnetwork.com/index.php/api/".$appointmentType."/".$accountNumber;
+			$url = getenv('HTTPS') . getenv('APPOINTMENT_ENDPOINT') . "/index.php/api/".$appointmentType."/".$accountNumber;
 				
 			$json = file_get_contents($url);
 			$obj = json_decode($json);
@@ -63,7 +63,7 @@ class Remote_model extends CI_Model
 		    return false;
 		    exit;
 		    
-		    $url = "https://control.abnetwork.com/source/get_theme/";
+		    $url = getenv('HTTPS'). getenv('REMOTE_BETA_ENDPOINT') . "/source/get_theme/";
 			$account_id = substr($channel,4,5);
 				
 			$json = file_get_contents($url.$channel."/abn-scala-request-".strrev($channel));
@@ -82,7 +82,7 @@ class Remote_model extends CI_Model
 				$dtvTimestamp = date('Y-m-d H:i:s');
 				$json = '[{"id":"00","channel":"CHSW9100201DTHCL","dtv_background":"\/content\/DEALER_TV_CONTENT\/DTV_ASSETS\/THEMES\/ground_gunmetal.png","dtv_frame":"\/content\/DEALER_TV_CONTENT\/DTV_ASSETS\/THEMES\/frame_gunmetal.png","dtv_chrome_logo":"\/content\/DEALER_SPECIFIC_CONTENT\/HOMETOWN_CHEVROLET_91002\/ASSETS\/91002_CHROME.png","dtv_cube":"\/content\/DEALER_SPECIFIC_CONTENT\/HOMETOWN_CHEVROLET_91002\/ASSETS\/91002_CUBE.mp4","timestamp":"'.$dtvTimestamp.'"}]';
 			} else {
-				$url = "https://control.abnetwork.com/source/get_dtv/";
+				$url = getenv('HTTPS'). getenv('REMOTE_BETA_ENDPOINT') . "/source/get_dtv/";
 				$account_id = substr($channel,4,5);
 		
 				$json = file_get_contents($url.$channel."/abn-scala-request-".strrev($channel));
@@ -98,9 +98,9 @@ class Remote_model extends CI_Model
 	public function get_menuboard($channel = NULL) {
 		if (!is_null($channel)) {
 			if (substr($channel,4,5) == "20001" || substr($channel,4,5) == "12345" || $channel == "GKSL9100202MBHCL" || $channel == "CHSL9100202MBHCL") {
-				$url = "https://gm.abnetwork.com/source/get_menuboard/";
+				$url = getenv('HTTPS') . getenv('GM_ENDPOINT')."/source/get_menuboard/";
 			} else {
-				$url = "https://control.abnetwork.com/source/get_menuboard/";
+				$url = getenv('HTTPS'). getenv('REMOTE_BETA_ENDPOINT')."/source/get_menuboard/";
 			}
 			$account_id = substr($channel,4,5);
 	
@@ -141,9 +141,9 @@ class Remote_model extends CI_Model
 		    exit;
 		    
 			if ($channel == "CHSW9100201DTHCL") {
-				$url = "https://gm.abnetwork.com/source/get_scroller/";
+				$url = getenv('HTTPS') . getenv('GM_ENDPOINT')."/source/get_scroller/";
 			} else {
-				$url = "https://control.abnetwork.com/source/get_scroller/";
+				$url = getenv('HTTPS'). getenv('REMOTE_BETA_ENDPOINT')."/source/get_scroller/";
 			}
 			$account_id = substr($channel,4,5);
 	

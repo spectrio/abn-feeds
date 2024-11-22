@@ -1,5 +1,11 @@
 <?php
+require __DIR__ . '/vendor/autoload.php';
+$dotenv = Dotenv\Dotenv::createImmutable(__DIR__);
+$dotenv->load();
 
+foreach ($_ENV as $key => $value) {
+    putenv("$key=$value");
+}
 /*
  *---------------------------------------------------------------
  * APPLICATION ENVIRONMENT
@@ -18,7 +24,7 @@
  * NOTE: If you change these, also change the error_reporting() code below
  *
  */
-	define('ENVIRONMENT', 'development');
+    define('ENVIRONMENT', getenv('CI_ENV') ?? 'development');
 /*
  *---------------------------------------------------------------
  * ERROR REPORTING
