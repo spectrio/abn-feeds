@@ -5,12 +5,12 @@
  * 
  */
 return [
-	'xmlAllNewsEndpoint' => 'http://silo.digichief.com/ABN-Live-2-1-2012/NewsII/XML/AllStories.xml',
-	'xmlThisDateHistoryEndpoint' => 'http://silo.digichief.com/ABN-Live-2-1-2012/Almanac/XML/ThisDate.xml',
-	'xmlBornDateEndpoint' => 'http://silo.digichief.com/ABN-Live-2-1-2012/Almanac/XML/BornDate.xml',
+	'xmlAllNewsEndpoint' => 'https://api.digichief.com/news/getnewsXML/all/Spectrio/bcb5e2fe-e898-4e98-9cc3-34900dc2a8b7?category=all&format=xml',
+	'xmlThisDateHistoryEndpoint' => 'https://api.digichief.com/infotainment/getinfotainment/Spectrio/bcb5e2fe-e898-4e98-9cc3-34900dc2a8b7?category=TDIH&qty=r2&format=xml',
+	'xmlBornDateEndpoint' => 'https://api.digichief.com/infotainment/getinfotainment/Spectrio/bcb5e2fe-e898-4e98-9cc3-34900dc2a8b7?category=botd&qty=r2&format=xml',
 	
-	'xmlOlympicsEndpoint' => 'http://silo.digichief.com/abn-live-2-1-2012/Sportstats/XML/Olympics-Medal-Count-Medals.XML',
-	'xmlWeatherEndpoint' => 'http://silo.digichief.com/ABN-Live-2-1-2012/Weather/ZipCode/XML/',
+	'xmlOlympicsEndpoint' => 'https://api.digichief.com/sports-olympics/getmedal/Spectrio/bcb5e2fe-e898-4e98-9cc3-34900dc2a8b7?abbr=USA,CAN&format=xml',
+	'xmlWeatherEndpoint' => 'https://api.digichief.com/weather/getweather/Spectrio/bcb5e2fe-e898-4e98-9cc3-34900dc2a8b7?format=xml&zipcode=40509',
 	'bannedNewsCategories' => array('War','Disaster','Religion'),
 ];
 
