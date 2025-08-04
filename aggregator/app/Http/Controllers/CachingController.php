@@ -670,53 +670,20 @@ class CachingController extends Controller
 
         return Response::make($accountsToUpdate, '200')->header('Content-Type', 'application/json');
     }
-    
-    public function loadProblematicXml($filePath) {
-        $content = file_get_contents($filePath);
-        
-        // First try normal loading
-        libxml_use_internal_errors(true);
-        $xml = simplexml_load_string($content);
-        
-        if ($xml === false) {
-            // If failed, try to fix common issues
-            $content = htmlspecialchars_decode($content, ENT_NOQUOTES);
-            $content = preg_replace('/&(?!(amp|lt|gt|quot|apos);)/', '&amp;', $content);
-            
-            $xml = simplexml_load_string($content);
-            if ($xml === false) {
-                $errors = libxml_get_errors();
-                throw new Exception("XML parsing errors: " . print_r($errors, true));
-            }
-        }
-        
-        return $xml;
-    }
 
     public function get_xml_data($url) {
         $rememberKey = sha1($url);
         $cachedData = Cache::get($rememberKey);
 
-        /*$file_data = file_get_contents($url);
-
-        $cache_content =  Cache::remember($rememberKey, 3600, function () use ($url) {});*/
-                 //$cachedData ='';
-                    if (empty($cachedData)) { 
-                        $file_data = file_get_contents($url);
-                        $cache_content = Response::make($file_data, '200')->header('Content-Type', 'application/xml');
-                    } else {
-                        $cache_content = $cachedData;
-                    }
-
-
-
-
+        if (empty($cachedData)) { 
+            $file_data = file_get_contents($url);
+            $cache_content = Response::make($file_data, '200')->header('Content-Type', 'application/xml');
+        } else {
+            $cache_content = $cachedData;
+        }
 
         $string = substr($cache_content, 114);
 
-        
-
-
         $xml = Response::make($string, '200')->header('Content-Type', 'application/xml');
 
         $simpleXml = simplexml_load_string($xml->getContent(), 'SimpleXMLElement', LIBXML_NOCDATA | LIBXML_NOBLANKS | LIBXML_COMPACT | LIBXML_PARSEHUGE);
@@ -726,56 +693,4 @@ class CachingController extends Controller
         return $xml_response->original;
     }
 
-public function get_xml_data_2($url) {
-        $rememberKey = sha1($url);
-        $cachedData = Cache::get($rememberKey);
-
-        /*$file_data = file_get_contents($url);
-
-        $cache_content =  Cache::remember($rememberKey, 3600, function () use ($url) {});*/
-                 //$cachedData ='';
-                    if (empty($cachedData)) { 
-                        $file_data = file_get_contents($url);
-                        $cache_content = Response::make($file_data, '200')->header('Content-Type', 'application/xml');
-                        
-                    } else {
-                        $cache_content = $cachedData;
-                    }
-
-        $string = substr($cache_content, 115);
-        $xml = Response::make($string, '200')->header('Content-Type', 'application/xml');
-
-        $simpleXml = simplexml_load_string($xml->getContent(), 'SimpleXMLElement', LIBXML_NOCDATA | LIBXML_NOBLANKS | LIBXML_COMPACT | LIBXML_PARSEHUGE);
-
-        $xml_response = response($simpleXml, 200, ['Content-Type' => 'application/xml']);
-        
-        return $xml_response->original;
-    }
-
-
-
-      public function get_xml_data_bkp($url) {
-        $rememberKey = sha1($url);
-        $cachedData = Cache::get($rememberKey);
-
-        /*$file_data = file_get_contents($url);
-
-        $cache_content =  Cache::remember($rememberKey, 3600, function () use ($url) {});*/
-                 //$cachedData ='';
-                    if (empty($cachedData)) { 
-                        $file_data = file_get_contents($url);
-                        $cache_content = Response::make($file_data, '200')->header('Content-Type', 'application/xml');
-                        
-                    } else {
-                        $cache_content = $cachedData;
-                    }
-
-        $string = substr($cache_content, 115);
-        $xml = Response::make($string, '200')->header('Content-Type', 'application/xml');
-
-        $simpleXml = simplexml_load_string($xml->getContent(), 'SimpleXMLElement', LIBXML_NOCDATA | LIBXML_NOBLANKS | LIBXML_COMPACT | LIBXML_PARSEHUGE);
-
-        $xml_response = response($simpleXml, 200, ['Content-Type' => 'application/xml']);
-        return $xml_response->original;
-    }
 }
