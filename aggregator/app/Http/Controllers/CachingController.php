@@ -18,6 +18,9 @@ use Exception;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Response;
 
+
+use Illuminate\Support\Str; 
+
 use Monolog\Logger;
 use NewRelic\Monolog\Enricher\{Handler, Processor};
 
@@ -85,6 +88,18 @@ class CachingController extends Controller
         echo print_r($updatedScrollers);
     }
 
+
+    public function array_to_xml1($data, &$xml)
+{
+    foreach ($data as $key => $value) {
+        if (is_array($value) || is_object($value)) {
+            $subnode = $xml->addChild($key);
+            array_to_xml1($value, $subnode);
+        } else {
+            $xml->addChild($key, htmlspecialchars($value));
+        }
+    }
+}
     public function buildScrollers()
     {
         $time = microtime();
@@ -105,16 +120,16 @@ class CachingController extends Controller
         $data['stories'] = array();
         $data['banned'] = array();
 
-        // Load News Stories and Process
-        $xml = simplexml_load_file('/var/www/feeds/digicache/AllStories.xml');
-
-        if (property_exists($xml, 'news')) {
-            $bannedCount = 0;
-            foreach ($xml->news as $story) {
+    $url = Config::get('digichief.xmlAllNewsEndpoint');
+    $xml = $this->get_xml_data($url);
+    
+    if (property_exists($xml->content, 'News')) {            
+            $bannedCount = 0;   
+            foreach ($xml->content->News as $story) {
                 $banned = false;
                 $storyCategory = strtolower(str_replace(" ", "", (string)$story->category));
                 if (!in_array($storyCategory, $bannedCategories)) {
-                    $storyText = preg_replace('/\s+/', ' ', (string)$story->item);
+                    $storyText = preg_replace('/\s+/', ' ', (string)$story->title);
                     $storyWords = explode(" ", $storyText);
                     $storyLength = strlen($storyText);
                     $punctuation = array(',', ':', '-', '!', '?', '.', ';', '\'');
@@ -140,12 +155,13 @@ class CachingController extends Controller
                 }
             }
         }
+        
+    $url = Config::get('digichief.xmlThisDateHistoryEndpoint');
+    $xml = $this->get_xml_data($url);
 
-        $xml = simplexml_load_file('/var/www/feeds/digicache/ThisDate.xml');
-
-        if (property_exists($xml, 'item')) {
+    if (property_exists($xml, 'content')) {
             $bannedCount = 0;
-            foreach ($xml->item as $story) {
+            foreach ($xml->content->ThisDay as $story) {
                 $banned = false;
                 $storyText = 'This Date in History: ' . preg_replace('/\s+/', ' ', (string)$story->description);
                 $storyCategory = 'default';
@@ -174,13 +190,14 @@ class CachingController extends Controller
             }
         }
 
-        $xml = simplexml_load_file('/var/www/feeds/digicache/BornDate.xml');
+    $url = Config::get('digichief.xmlBornDateEndpoint');
+    $xml = $this->get_xml_data($url);
 
-        if (property_exists($xml, 'item')) {
+    if (property_exists($xml, 'content')) {
             $bannedCount = 0;
-            foreach ($xml->item as $story) {
+            foreach ($xml->content->BornOn as $story) {
                 $banned = false;
-                $storyText = 'Born on this Date: ' . preg_replace('/\s+/', ' ', (string)$story->description);
+                $storyText = 'Born on this Date: ' . preg_replace('/\s+/', ' ', (string)$story->entry);
                 $storyCategory = 'default';
                 $storyWords = explode(" ", $storyText);
                 $storyLength = strlen($storyText);
@@ -236,10 +253,6 @@ class CachingController extends Controller
         self::array_to_xml($data, $xml_data);
         $result = $xml_data->asXML();
 
-        /*echo "<pre>";
-    	echo print_r($data, true);
-    	echo print_r($result,true);
-    	echo "</pre>";*/
         return Response::make($result, '200')->header('Content-Type', 'text/xml');
     }
 
@@ -658,4 +671,19 @@ class CachingController extends Controller
 
         return Response::make($accountsToUpdate, '200')->header('Content-Type', 'application/json');
     }
+
+    public function get_xml_data($url) {
+        $rememberKey = sha1($url);
+        $cached_data = Cache::get($rememberKey);
+            
+        if(empty($cached_data)) {
+             $file_data = file_get_contents($url);
+            $xml_data = simplexml_load_string($file_data);
+        } else {
+            $xml = Response::make($cached_data, '200')->header('Content-Type', 'application/xml');
+            $xml_data = simplexml_load_string($xml->original->original, 'SimpleXMLElement', LIBXML_NOCDATA | LIBXML_NOBLANKS | LIBXML_COMPACT | LIBXML_PARSEHUGE);
+        }
+        return $xml_data;
+    }
+
 }
