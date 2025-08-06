@@ -122,6 +122,7 @@ class CachingController extends Controller
 
     $url = Config::get('digichief.xmlAllNewsEndpoint');
     $xml = $this->get_xml_data($url);
+    
     if (property_exists($xml->content, 'News')) {            
             $bannedCount = 0;   
             foreach ($xml->content->News as $story) {
@@ -673,24 +674,16 @@ class CachingController extends Controller
 
     public function get_xml_data($url) {
         $rememberKey = sha1($url);
-        $cachedData = Cache::get($rememberKey);
-
-        if (empty($cachedData)) { 
-            $file_data = file_get_contents($url);
-            $cache_content = Response::make($file_data, '200')->header('Content-Type', 'application/xml');
+        $cached_data = Cache::get($rememberKey);
+            
+        if(empty($cached_data)) {
+             $file_data = file_get_contents($url);
+            $xml_data = simplexml_load_string($file_data);
         } else {
-            $cache_content = $cachedData;
+            $xml = Response::make($cached_data, '200')->header('Content-Type', 'application/xml');
+            $xml_data = simplexml_load_string($xml->original->original, 'SimpleXMLElement', LIBXML_NOCDATA | LIBXML_NOBLANKS | LIBXML_COMPACT | LIBXML_PARSEHUGE);
         }
-
-        $string = substr($cache_content, 114);
-
-        $xml = Response::make($string, '200')->header('Content-Type', 'application/xml');
-
-        $simpleXml = simplexml_load_string($xml->getContent(), 'SimpleXMLElement', LIBXML_NOCDATA | LIBXML_NOBLANKS | LIBXML_COMPACT | LIBXML_PARSEHUGE);
-
-        $xml_response = response($simpleXml, 200, ['Content-Type' => 'application/xml']);
-        
-        return $xml_response->original;
+        return $xml_data;
     }
 
 }
