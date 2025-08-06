@@ -5,7 +5,7 @@
  * 
  */
 return [
-	'xmlAllNewsEndpoint' => 'https://api.digichief.com/news/getnewsXML/all/Spectrio/bcb5e2fe-e898-4e98-9cc3-34900dc2a8b7?category=all&format=xml',
+	'xmlAllNewsEndpoint' => 'https://api.digichief.com/newsv2/getNews/Spectrio/bcb5e2fe-e898-4e98-9cc3-34900dc2a8b7?category=all&format=xml',
 	'xmlThisDateHistoryEndpoint' => 'https://api.digichief.com/infotainment/getinfotainment/Spectrio/bcb5e2fe-e898-4e98-9cc3-34900dc2a8b7?category=TDIH&qty=r2&format=xml',
 	'xmlBornDateEndpoint' => 'https://api.digichief.com/infotainment/getinfotainment/Spectrio/bcb5e2fe-e898-4e98-9cc3-34900dc2a8b7?category=botd&qty=r2&format=xml',
 	
