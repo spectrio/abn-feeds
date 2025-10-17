@@ -612,11 +612,11 @@ class CachingController extends Controller
         libxml_use_internal_errors(true);
 
         // Monolog Logger
-        $newrelic_log = new Logger('log');
+        /*$newrelic_log = new Logger('log');
         $newrelic_log->pushProcessor(new Processor);
 
         $handler = new Handler;
-        $handler->setLicenseKey('ee2d839bc858a1b5feef951fb834dbdeFFFFNRAL');
+        $handler->setLicenseKey('ee2d839bc858a1b5feef951fb834dbdeFFFFNRAL');*/
 
         $context = stream_context_create(['http' => ['ignore_errors' => true]]);
         $accountsToUpdate = cacheAccount::all();
@@ -640,8 +640,8 @@ class CachingController extends Controller
 
 						// $savePath = '/var/www/scala-weather-feed/aggregator/feeds/digicache/' . $account->accountZip . '.XML';
 						$savePath = '/var/www/feeds/digicache/' . $account->accountZip . '.XML';
-						$newrelic_log->pushHandler(new Handler(Logger::INFO));
-						$newrelic_log->info('XML file is saved for account ' . $account->accountID, array('platform' => 'Feeds Aggregator', 'type' => 'info', 'message' => 'File saved for account ' . $account->accountID));
+						/*$newrelic_log->pushHandler(new Handler(Logger::INFO));
+						$newrelic_log->info('XML file is saved for account ' . $account->accountID, array('platform' => 'Feeds Aggregator', 'type' => 'info', 'message' => 'File saved for account ' . $account->accountID));*/
 
 						if ($xmlFile->asXML($savePath) === false) {
 							throw new Exception('Could not retrieve weather for account ' . $account->accountID . ' with zip code ' . $account->accountZip . ' at URL ' . $url);
@@ -652,8 +652,8 @@ class CachingController extends Controller
 				Log::error($e->getMessage());
 				Log::error('Error processing account ' . $account->accountID . ' with zip code ' . $account->accountZip . ': ');
 
-				$newrelic_log->pushHandler(new Handler(Logger::CRITICAL));
-				$newrelic_log->critical('Error processing account ' . $account->accountID . ' with zip code ' . $account->accountZip, array('platform' => 'Feeds Aggregator', 'type' => 'error', 'message' => $e->getMessage()));
+				//$newrelic_log->pushHandler(new Handler(Logger::CRITICAL));
+				//$newrelic_log->critical('Error processing account ' . $account->accountID . ' with zip code ' . $account->accountZip, array('platform' => 'Feeds Aggregator', 'type' => 'error', 'message' => $e->getMessage()));
 
 				if (extension_loaded('newrelic')) { // Ensure PHP agent is available
 					newrelic_notice_error($e);
@@ -661,8 +661,8 @@ class CachingController extends Controller
 			}
         }
 
-        $newrelic_log->pushHandler(new Handler(Logger::INFO));
-		$newrelic_log->info('All accounts are updated');
+        /*$newrelic_log->pushHandler(new Handler(Logger::INFO));
+		$newrelic_log->info('All accounts are updated');*/
 
         // No error
         if (extension_loaded('newrelic')) { // Ensure PHP agent is available
